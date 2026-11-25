@@ -7,87 +7,120 @@
 <title>宇泰智能数据中心</title>
 <style>
 :root{
-  --bg:#f5f5f7; --card:rgba(255,255,255,.76); --line:rgba(0,0,0,.08); --line-strong:rgba(0,0,0,.15);
-  --text:#1d1d1f; --sub:#6e6e73; --faint:#a1a1a6;
-  --accent:#0071e3; --soft:rgba(0,113,227,.08);
-  --v1:#5e5ce6; --v2:#b8860b; --v3:#0b7bd6;
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 26px rgba(0,0,0,.055);
-  --shadow-hi:0 2px 8px rgba(0,0,0,.07),0 20px 48px rgba(0,0,0,.11);
+  --bg:#f7f7f9; --text:#1a1a1c; --sub:#6b6b70; --faint:#a3a3a8;
+  --accent:#0071e3; --line:rgba(0,0,0,.09);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){
-  :root{--bg:#000;--card:rgba(28,28,30,.74);--line:rgba(255,255,255,.11);--line-strong:rgba(255,255,255,.2);
-    --text:#f5f5f7;--sub:#98989d;--faint:#6e6e73;--accent:#0a84ff;--soft:rgba(10,132,255,.13);
-    --v1:#8f8dff;--v2:#e0b341;--v3:#4aa8ff;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.5);--shadow-hi:0 20px 48px rgba(0,0,0,.6);}
+  :root{--bg:#0a0a0c;--text:#f2f2f4;--sub:#98989d;--faint:#6e6e73;--accent:#0a84ff;--line:rgba(255,255,255,.12);}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;padding:0 0 64px;font-family:var(--font);font-size:15px;line-height:1.55;color:var(--text);
-  -webkit-font-smoothing:antialiased;
-  background:radial-gradient(880px 480px at 10% -8%,rgba(120,170,255,.19),transparent 62%),
-             radial-gradient(720px 440px at 92% -6%,rgba(255,190,120,.15),transparent 60%),var(--bg);
-  background-attachment:fixed}
+body{margin:0;padding:0 0 66px;font-family:var(--font);font-size:15px;line-height:1.6;color:var(--text);
+  -webkit-font-smoothing:antialiased;background:var(--bg)}
 a{color:inherit;text-decoration:none}
-.w{max-width:1060px;margin:0 auto;padding:0 26px}
+.w{max-width:1020px;margin:0 auto;padding:0 26px}
 
 .top{display:flex;align-items:center;gap:12px;padding:26px 0 8px}
 .brand{display:flex;align-items:center;gap:9px}
-.mark{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;
-  background:linear-gradient(150deg,#3f8cf5,#0b6ae0);color:#fff;font-weight:800;font-size:13px;
-  box-shadow:0 2px 8px rgba(11,106,224,.3)}
-.brand b{font-size:13.5px;font-weight:600;letter-spacing:.2px}
+.mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;
+  background:#1a1a1c;color:#fff;font-weight:800;font-size:12px}
+@media (prefers-color-scheme:dark){.mark{background:#f2f2f4;color:#0a0a0c}}
+.brand b{font-size:13px;font-weight:600}
 .brand span{display:block;font-size:10.5px;color:var(--faint);letter-spacing:.6px;margin-top:-2px}
-.top .only{margin-left:auto;font-size:11px;color:var(--faint);letter-spacing:.4px}
+.top .only{margin-left:auto;font-size:11px;color:var(--faint)}
 
-.hero{padding:34px 0 10px}
+.hero{padding:38px 0 6px}
 .eyebrow{font-size:11px;letter-spacing:2.2px;color:var(--accent);font-weight:600}
-h1{margin:11px 0 0;font-size:clamp(28px,4.4vw,44px);line-height:1.16;font-weight:700;letter-spacing:-.9px}
+h1{margin:11px 0 0;font-size:clamp(27px,4.3vw,42px);line-height:1.2;font-weight:700;letter-spacing:-.9px}
 h1 em{font-style:normal;color:var(--accent)}
-.lead{margin:14px 0 0;max-width:640px;color:var(--sub);font-size:14.5px;line-height:1.65}
+.lead{margin:14px 0 0;max-width:620px;color:var(--sub);font-size:14.5px;line-height:1.7}
 
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
-.role{position:relative;display:flex;flex-direction:column;padding:22px 21px 19px;border-radius:20px;
-  background:var(--card);border:1px solid var(--line);
-  backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
-  box-shadow:var(--shadow);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s}
-.role:hover{transform:translateY(-4px);box-shadow:var(--shadow-hi);border-color:var(--line-strong)}
-.role:before{content:'';position:absolute;left:21px;right:21px;top:0;height:2px}
-.r1:before{background:linear-gradient(90deg,var(--v1),transparent 72%)}
-.r2:before{background:linear-gradient(90deg,var(--v2),transparent 72%)}
-.r3:before{background:linear-gradient(90deg,var(--v3),transparent 72%)}
+/* ===== 三种不同视觉的入口 ===== */
+.doors{display:flex;flex-direction:column;gap:14px;margin-top:38px}
 
-.who{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:1.4px}
-.r1 .who{color:var(--v1)}.r2 .who{color:var(--v2)}.r3 .who{color:var(--v3)}
-.who .k{width:5px;height:5px;border-radius:50%;background:currentColor}
-.role h2{margin:9px 0 3px;font-size:19px;font-weight:700;letter-spacing:-.4px}
-.role .def{font-size:12.5px;color:var(--faint);margin-bottom:13px;min-height:19px}
-.role ul{margin:0 0 16px;padding:0;list-style:none}
-.role li{display:flex;gap:8px;font-size:12.5px;color:var(--sub);line-height:1.55;padding:3px 0}
-.role li i{flex:0 0 13px;height:13px;border-radius:4px;background:var(--soft);color:var(--accent);
-  font-size:9px;font-style:normal;display:grid;place-items:center;margin-top:2px;font-weight:700}
-.role .go{margin-top:auto;display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;transition:.18s}
-.role .go:hover{filter:brightness(1.07)}
-.r1 .go{background:var(--v1);box-shadow:0 2px 10px rgba(94,92,230,.24)}
-.r2 .go{background:linear-gradient(100deg,#b8860b,#d99f1e);box-shadow:0 2px 10px rgba(184,134,11,.24)}
-.r3 .go{background:var(--v3);box-shadow:0 2px 10px rgba(11,123,214,.24)}
-.role .alt{margin-top:9px;text-align:center;font-size:11.5px;color:var(--faint)}
-.role .alt a{color:var(--accent);font-weight:600}
-.role .alt a:hover{text-decoration:underline}
+/* A · 展厅：深色沉浸，横铺 */
+.d1{position:relative;display:flex;align-items:center;gap:26px;padding:26px 28px;border-radius:20px;
+  background:linear-gradient(115deg,#0c1626 0%,#102a3f 52%,#0a1a2b 100%);
+  border:1px solid rgba(90,190,230,.22);color:#e8f5fd;overflow:hidden;
+  box-shadow:0 14px 40px rgba(6,22,38,.28);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s}
+.d1:hover{transform:translateY(-3px);box-shadow:0 22px 56px rgba(6,22,38,.38)}
+.d1:before{content:'';position:absolute;right:-60px;top:-70px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(67,218,250,.22),transparent 66%)}
+.d1 .l{flex:1;position:relative;z-index:1}
+.d1 .kick{font-size:10.5px;letter-spacing:1.8px;color:#6fd8f5;font-weight:700}
+.d1 h2{margin:8px 0 4px;font-size:22px;font-weight:700;letter-spacing:-.5px;color:#fff}
+.d1 p{margin:0;font-size:13px;color:#a9c8dc;line-height:1.6;max-width:430px}
+.d1 .r{position:relative;z-index:1;text-align:right;flex:0 0 auto}
+.d1 .num{font-size:44px;font-weight:800;line-height:1;color:#6fd8f5;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.d1 .unit{font-size:11px;color:#7fa6bf;letter-spacing:1.4px;margin-top:2px}
+.d1 .cta{margin-top:12px;display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:11px;
+  background:rgba(111,216,245,.14);border:1px solid rgba(111,216,245,.4);color:#d9f4ff;font-size:13px;font-weight:600}
+.d1:hover .cta{background:rgba(111,216,245,.24)}
 
-.note{margin-top:36px;padding:17px 21px;border-radius:15px;border:1px solid var(--line);
-  background:var(--card);backdrop-filter:blur(20px);font-size:12.5px;color:var(--sub);line-height:1.8}
+/* B · 公文：纯白无修饰，像一页文件 */
+.d2{display:flex;align-items:stretch;gap:0;padding:0;border-radius:16px;
+  background:#fff;border:1px solid rgba(0,0,0,.13);box-shadow:0 1px 2px rgba(0,0,0,.03),0 8px 22px rgba(0,0,0,.05);
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s}
+@media (prefers-color-scheme:dark){.d2{background:#1c1c1e;border-color:rgba(255,255,255,.16);box-shadow:0 8px 22px rgba(0,0,0,.5)}}
+.d2:hover{transform:translateY(-3px);box-shadow:0 2px 6px rgba(0,0,0,.06),0 18px 44px rgba(0,0,0,.1)}
+.d2 .stub{flex:0 0 96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  padding:22px 10px;border-right:1px solid var(--line);background:rgba(0,0,0,.02)}
+@media (prefers-color-scheme:dark){.d2 .stub{background:rgba(255,255,255,.04)}}
+.d2 .stub b{font-size:26px;font-weight:800;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums}
+.d2 .stub span{font-size:10px;color:var(--faint);letter-spacing:1.2px;font-weight:600}
+.d2 .stub em{margin-top:8px;font-style:normal;font-size:10px;color:#b8860b;font-weight:700;letter-spacing:.8px;
+  padding:2px 6px;border-radius:4px;background:rgba(184,134,11,.1);border:1px solid rgba(184,134,11,.2)}
+.d2 .l{flex:1;padding:22px 24px;display:flex;flex-direction:column;justify-content:center}
+.d2 .kick{font-size:10.5px;letter-spacing:1.6px;color:var(--faint);font-weight:700}
+.d2 h2{margin:7px 0 4px;font-size:20px;font-weight:700;letter-spacing:-.4px}
+.d2 p{margin:0;font-size:13px;color:var(--sub);line-height:1.6;max-width:460px}
+.d2 .r{flex:0 0 auto;display:flex;align-items:center;padding:0 24px}
+.d2 .cta{display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border-radius:10px;
+  background:#1a1a1c;color:#fff;font-size:13px;font-weight:600;white-space:nowrap}
+@media (prefers-color-scheme:dark){.d2 .cta{background:#f2f2f4;color:#0a0a0c}}
+.d2:hover .cta{background:var(--accent);color:#fff}
+
+/* C · 数据：矩阵感，等宽数字 */
+.d3{display:flex;align-items:center;gap:22px;padding:24px 26px;border-radius:16px;
+  background:var(--bg);border:1px solid var(--line);position:relative;overflow:hidden;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s}
+@media (prefers-color-scheme:dark){.d3{background:#111114}}
+.d3:hover{transform:translateY(-3px);border-color:rgba(0,113,227,.35)}
+.d3 .grid-deco{position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:34px 34px;mask-image:linear-gradient(90deg,transparent 40%,#000 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 40%,#000 100%)}
+.d3 .l{flex:1;position:relative;z-index:1}
+.d3 .kick{font-size:10.5px;letter-spacing:1.6px;color:var(--accent);font-weight:700}
+.d3 h2{margin:7px 0 4px;font-size:20px;font-weight:700;letter-spacing:-.4px}
+.d3 p{margin:0;font-size:13px;color:var(--sub);line-height:1.6;max-width:440px}
+.d3 .r{position:relative;z-index:1;display:flex;align-items:center;gap:20px}
+.d3 .stat{text-align:right}
+.d3 .stat b{display:block;font-size:23px;font-weight:800;letter-spacing:-.6px;line-height:1.1;font-variant-numeric:tabular-nums}
+.d3 .stat span{font-size:10px;color:var(--faint);letter-spacing:.8px}
+.d3 .cta{display:inline-flex;align-items:center;gap:7px;padding:10px 17px;border-radius:10px;
+  background:var(--accent);color:#fff;font-size:13px;font-weight:600;white-space:nowrap}
+.d3:hover .cta{filter:brightness(1.08)}
+
+.note{margin-top:34px;padding:17px 21px;border-radius:14px;border:1px solid var(--line);
+  font-size:12.5px;color:var(--sub);line-height:1.8}
 .note b{color:var(--text);font-weight:600}
 .note div{display:flex;gap:10px;align-items:baseline;margin:2px 0}
-.note div span:first-child{flex:0 0 62px;color:var(--faint);font-size:11px;letter-spacing:.6px}
+.note div span:first-child{flex:0 0 56px;color:var(--faint);font-size:11px;letter-spacing:.6px}
 
-.pfoot{padding:25px 0 0;margin-top:32px;border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;line-height:1.85}
+.pfoot{padding:24px 0 0;margin-top:30px;border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;line-height:1.85}
 .pfoot a{color:var(--accent)}
 
 @media (max-width:880px){
-  .w{padding:0 17px}.roles{grid-template-columns:1fr;gap:13px}
-  .role{padding:19px 18px 17px}h1{font-size:28px}
-  .top{padding:18px 0 6px}.top .only{display:none}
+  .w{padding:0 17px}
+  .d1,.d3{flex-direction:column;align-items:flex-start;gap:16px}
+  .d1 .r,.d3 .r{width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .d1 .num{font-size:34px}
+  .d2{flex-direction:column}
+  .d2 .stub{flex:none;flex-direction:row;gap:10px;border-right:0;border-bottom:1px solid var(--line);padding:14px 20px;justify-content:flex-start}
+  .d2 .stub em{margin-top:0}
+  .d2 .r{padding:0 24px 20px}
+  h1{font-size:27px}.top{padding:18px 0 6px}.top .only{display:none}
 }
 </style>
 </head>
@@ -97,67 +130,64 @@ h1 em{font-style:normal;color:var(--accent)}
 <div class="top">
   <div class="brand"><span class="mark">宇</span>
     <div><b>宇泰智能数据中心</b><span>UTEK · DATA CENTER</span></div></div>
-  <div class="only">演示环境 · 合成数据</div>
+  <div class="only">演示环境</div>
 </div>
 
 <section class="hero">
-  <div class="eyebrow">OPEN THE RIGHT DOOR</div>
+  <div class="eyebrow">CHOOSE YOUR WAY IN</div>
   <h1>你从<em>哪扇门</em>进来？</h1>
-  <p class="lead">同一套东西，三种人想看的东西完全不同。参观的人要三分钟看懂，老板要今天的取舍，客户要能核对的能力清单——先选门，别在十几个版本里找路。</p>
+  <p class="lead">路过的想三分钟看懂，做决定的只想看今天要拍板什么，正在评估的要一份能核对的清单。三种人要看的东西完全不同——先选门。</p>
 </section>
 
-<div class="roles">
+<div class="doors">
 
-  <div class="role r1">
-    <div class="who"><span class="k"></span>参观 · 三分钟</div>
-    <h2>路过看一眼的人</h2>
-    <div class="def">第一次来，只想搞清楚这是什么</div>
-    <ul>
-      <li><i>1</i><span>一句话说清它到底在干什么</li>
-      <li><i>2</i><span>只给你一个地方看，不用挑</li>
-      <li><i>3</i><span>不懂技术也能看完</li>
-    </ul>
-    <a class="go" href="tour.html"><span>三分钟看懂</span><span>→</span></a>
-    <div class="alt">想直奔最有冲击力的：<a href="yutai-v13-8/index.html">V13.8</a></div>
-  </div>
+  <a class="d1" href="tour.html">
+    <div class="l">
+      <div class="kick">VISITOR · 路过看一眼</div>
+      <h2>这是什么？</h2>
+      <p>不用懂设备，也不用会操作。一篇文章讲清楚它在解决什么问题，然后只带你看一个地方。</p>
+    </div>
+    <div class="r">
+      <div class="num">3</div>
+      <div class="unit">分钟看完</div>
+      <span class="cta">开始 <span>→</span></span>
+    </div>
+  </a>
 
-  <div class="role r2">
-    <div class="who"><span class="k"></span>老板 · 每天早上</div>
-    <h2>要做决定的人</h2>
-    <div class="def">这套东西你已经有了，每天要看取舍</div>
-    <ul>
-      <li><i>1</i><span>今天只有三件事，不是三十件</li>
-      <li><i>2</i><span>每件写清谁在动、你要做什么</li>
-      <li><i>3</i><span>代价摆出来：批了花多少，不批会怎样</li>
-    </ul>
-    <a class="go" href="role-exec.html"><span>打开今日一页纸</span><span>→</span></a>
-    <div class="alt">可直接 A4 打印，开会用</div>
-  </div>
+  <a class="d2" href="role-exec.html">
+    <div class="stub"><b>3</b><span>件事</span><em>每日</em></div>
+    <div class="l">
+      <div class="kick">DECISION MAKER · 每天早上</div>
+      <h2>今天要我拍板什么？</h2>
+      <p>只有三件。每件写清楚谁在处理、你点哪一下、以及不点的后果。能自动决定的，不会拿来烦你。</p>
+    </div>
+    <div class="r"><span class="cta">看今天这一页 <span>→</span></span></div>
+  </a>
 
-  <div class="role r3">
-    <div class="who"><span class="k"></span>潜在客户 · 一次看完</div>
-    <h2>在评估要不要用的人</h2>
-    <div class="def">不是来捧场，是来核对的</div>
-    <ul>
-      <li><i>1</i><span>十一个版本，各自能演什么</li>
-      <li><i>2</i><span>哪些做到了，哪些还没有——都写上</li>
-      <li><i>3</i><span>全部合成数据，不吹生产可用</li>
-    </ul>
-    <a class="go" href="catalog.html"><span>看能力矩阵</span><span>→</span></a>
-    <div class="alt">推荐先点 <a href="yutai-v13-8/index.html">V13.8 主推版</a></div>
-  </div>
+  <a class="d3" href="catalog.html">
+    <div class="grid-deco"></div>
+    <div class="l">
+      <div class="kick">PROSPECT · 正在评估</div>
+      <h2>到底做到了什么程度？</h2>
+      <p>十一版逐个对照：哪些能演、哪些只是雏形、哪些还没有。不夸大，也不藏。</p>
+    </div>
+    <div class="r">
+      <div class="stat"><b>11</b><span>个版本</span></div>
+      <div class="stat"><b>7</b><span>项对照</span></div>
+      <span class="cta">打开清单 <span>→</span></span>
+    </div>
+  </a>
 
 </div>
 
 <div class="note">
-  <div><span>为什么分</span><span><b>三种人要的东西互相冲突。</b>参观的人怕复杂，老板怕废话，客户怕夸大。一个页面同时满足三个，结果是三个都不满意。</span></div>
-  <div><span>底线</span><span>分的只是入口，不是系统——底层还是同一套页面，没有为谁复制一份。</span></div>
-  <div><span>边界</span><span>全部为合成数据，用于概念演示；不代表真实生产指标，不具备生产级审计与权限治理。</span></div>
+  <div><span>为什么分</span><span><b>三种人要的东西互相冲突。</b>路过的怕复杂，做决定的怕废话，正在评估的怕夸大。一个页面同时喂三种人，结果是三种都不满意。</span></div>
+  <div><span>底线</span><span>分的只是入口，不是系统——底下还是同一套东西，没有为谁复制一份。</span></div>
 </div>
 
 <div class="pfoot">
-  <p>零外部依赖 · 无 CDN · 断网可运行 · 支持系统深色模式自动切换</p>
-  <p>另有一份 <a href="light.html">UI 方向样片</a>（浅色工作台取向），供设计讨论用。</p>
+  <p>本页所有数字为演示内容，非真实经营数据。</p>
+  <p>另有一份 <a href="light.html">视觉方向样片</a>，供设计讨论用。</p>
 </div>
 
 </div>
