@@ -4398,9 +4398,9 @@ window.YT_RUNTIME={
 
   /* ---------- 样式 ---------- */
   var css = ''
-    + '.ytk-fab,.nav .ytk-fab{position:static;display:inline-flex;align-items:center;gap:7px;margin-left:9px;'
-    + 'padding:0 12px;height:32px;flex:0 0 auto;border-radius:8px;'
-    + 'border:1px solid rgba(67,218,250,.55);background:rgba(67,218,250,.1);color:#d6eefb;'
+    + '.ytk-fab,.scene-bar .ytk-fab,.nav .ytk-fab{position:static;display:inline-flex;align-items:center;gap:7px;'
+    + 'flex:0 0 auto;margin-left:4px;padding:7px 14px;border-radius:20px;'
+    + 'border:1px solid rgba(67,218,250,.65);background:rgba(67,218,250,.1);color:#d6eefb;'
     + 'font:600 12.5px/1 inherit;letter-spacing:.2px;cursor:pointer;white-space:nowrap;'
     + 'transition:.18s;vertical-align:middle}'
     + '.nav .ytk-fab:hover{background:rgba(67,218,250,.22);border-color:#43dafa;color:#fff}'
@@ -4515,13 +4515,22 @@ window.YT_RUNTIME={
   fab.className = 'ytk-fab';
   fab.id = 'ytkFab';
   fab.type = 'button';
-  fab.innerHTML = '<span class="dot"></span><span>⏱ 演进时钟</span>';
-  var nav = document.querySelector('nav.nav');
-  if (nav) {
-    var spacer = nav.querySelector('.spacer');
-    if (spacer && spacer.parentNode === nav) nav.insertBefore(fab, spacer.nextSibling);
-    else nav.appendChild(fab);
-  } else {
+  fab.innerHTML = '<span class="dot"></span><span>⏱ 演进</span>';
+  var sceneBar = document.querySelector('.scene-bar');
+  var navBar = document.querySelector('nav.nav');
+  var host = null;
+  if (sceneBar) {
+    /* 插在场景条里、'接口 Mock' 那个标签之前：既有空间又与原按钮同排 */
+    var mockLbl = null, kids = sceneBar.children;
+    for (var k = kids.length - 1; k >= 0; k--) {
+      if (kids[k].tagName === 'SPAN' && /Mock|接口/.test(kids[k].textContent)) { mockLbl = kids[k]; break; }
+    }
+    host = sceneBar;
+    if (mockLbl) sceneBar.insertBefore(fab, mockLbl); else sceneBar.appendChild(fab);
+  } else if (navBar) {
+    host = navBar; navBar.appendChild(fab);
+  }
+  if (!host) {
     fab.style.position = 'fixed';
     fab.style.right = '16px';
     fab.style.bottom = '180px';
@@ -4570,7 +4579,9 @@ window.YT_RUNTIME={
       var t = mm(8 + Math.floor(L.at * 15 / 60), (L.at * 15) % 60);
       html += '<li class="' + L.cls + '"><em>' + t + '</em><span><b>' + L.who + '</b> ' + L.txt + '</span></li>';
     }
-    if (!shown) html = '<li><em>--:--</em><span style="color:#4a6a80">尚未开始推演。点击「播放演进」看一次温升事件如何被三路 AI 处置。</span></li>';
+    if (!shown) html = pos === 0
+      ? '<li><em>--:--</em><span style="color:#4a6a80">尚未开始推演。点击「播放演进」看一次温升事件如何被三路 AI 处置。</span></li>'
+      : '<li><em>--:--</em><span style="color:#4a6a80">本时段尚未触发记录，事件从 T+45 起陆续写入。</span></li>';
     logEl.innerHTML = html;
   }
 
