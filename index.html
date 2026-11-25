@@ -4,177 +4,160 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:,">
-<title>宇泰智能数据中心 · 按角色进入</title>
+<title>宇泰智能数据中心</title>
 <style>
 :root{
-  --bg:#f5f5f7; --card:rgba(255,255,255,.76); --card-solid:#fff;
-  --line:rgba(0,0,0,.08); --line-strong:rgba(0,0,0,.15);
+  --bg:#f5f5f7; --card:rgba(255,255,255,.76); --line:rgba(0,0,0,.08); --line-strong:rgba(0,0,0,.15);
   --text:#1d1d1f; --sub:#6e6e73; --faint:#a1a1a6;
-  --accent:#0071e3; --accent-soft:rgba(0,113,227,.08);
-  --ops:#0b7bd6; --exec:#b8860b; --review:#5e5ce6;
-  --green:#1d9f6e; --amber:#b87a10;
+  --accent:#0071e3; --soft:rgba(0,113,227,.08);
+  --v1:#5e5ce6; --v2:#b8860b; --v3:#0b7bd6;
   --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 26px rgba(0,0,0,.055);
   --shadow-hi:0 2px 8px rgba(0,0,0,.07),0 20px 48px rgba(0,0,0,.11);
-  --radius:20px;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){
-  :root{--bg:#000;--card:rgba(28,28,30,.74);--card-solid:#1c1c1e;
-    --line:rgba(255,255,255,.11);--line-strong:rgba(255,255,255,.2);
-    --text:#f5f5f7;--sub:#98989d;--faint:#6e6e73;
-    --accent:#0a84ff;--accent-soft:rgba(10,132,255,.13);
-    --ops:#4aa8ff;--exec:#e0b341;--review:#8f8dff;
-    --green:#30d158;--amber:#ffd60a;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.5);
-    --shadow-hi:0 20px 48px rgba(0,0,0,.6);}
+  :root{--bg:#000;--card:rgba(28,28,30,.74);--line:rgba(255,255,255,.11);--line-strong:rgba(255,255,255,.2);
+    --text:#f5f5f7;--sub:#98989d;--faint:#6e6e73;--accent:#0a84ff;--soft:rgba(10,132,255,.13);
+    --v1:#8f8dff;--v2:#e0b341;--v3:#4aa8ff;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.5);--shadow-hi:0 20px 48px rgba(0,0,0,.6);}
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;padding:0 0 70px;color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;
+body{margin:0;padding:0 0 64px;font-family:var(--font);font-size:15px;line-height:1.55;color:var(--text);
   -webkit-font-smoothing:antialiased;
   background:radial-gradient(880px 480px at 10% -8%,rgba(120,170,255,.19),transparent 62%),
              radial-gradient(720px 440px at 92% -6%,rgba(255,190,120,.15),transparent 60%),var(--bg);
   background-attachment:fixed}
 a{color:inherit;text-decoration:none}
-.w{max-width:1100px;margin:0 auto;padding:0 26px}
+.w{max-width:1060px;margin:0 auto;padding:0 26px}
 
-.top{display:flex;align-items:center;gap:12px;padding:24px 0 10px}
+.top{display:flex;align-items:center;gap:12px;padding:26px 0 8px}
 .brand{display:flex;align-items:center;gap:9px}
 .mark{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;
   background:linear-gradient(150deg,#3f8cf5,#0b6ae0);color:#fff;font-weight:800;font-size:13px;
   box-shadow:0 2px 8px rgba(11,106,224,.3)}
 .brand b{font-size:13.5px;font-weight:600;letter-spacing:.2px}
 .brand span{display:block;font-size:10.5px;color:var(--faint);letter-spacing:.6px;margin-top:-2px}
-.top-link{margin-left:auto;font-size:12px;color:var(--sub);padding:6px 12px;border-radius:9px;
-  border:1px solid var(--line);background:var(--card);backdrop-filter:blur(18px);transition:.16s}
-.top-link:hover{color:var(--accent);border-color:rgba(0,113,227,.35)}
+.top .only{margin-left:auto;font-size:11px;color:var(--faint);letter-spacing:.4px}
 
-.hero{padding:30px 0 8px}
+.hero{padding:34px 0 10px}
 .eyebrow{font-size:11px;letter-spacing:2.2px;color:var(--accent);font-weight:600}
-h1{margin:11px 0 0;font-size:clamp(27px,4.2vw,42px);line-height:1.18;font-weight:700;letter-spacing:-.9px}
-.lead{margin:13px 0 0;max-width:620px;color:var(--sub);font-size:14px;line-height:1.65}
+h1{margin:11px 0 0;font-size:clamp(28px,4.4vw,44px);line-height:1.16;font-weight:700;letter-spacing:-.9px}
+h1 em{font-style:normal;color:var(--accent)}
+.lead{margin:14px 0 0;max-width:640px;color:var(--sub);font-size:14.5px;line-height:1.65}
 
-/* 角色卡 */
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
-.role{position:relative;display:flex;flex-direction:column;padding:22px 22px 20px;border-radius:var(--radius);
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:36px}
+.role{position:relative;display:flex;flex-direction:column;padding:22px 21px 19px;border-radius:20px;
   background:var(--card);border:1px solid var(--line);
   backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
   box-shadow:var(--shadow);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s}
 .role:hover{transform:translateY(-4px);box-shadow:var(--shadow-hi);border-color:var(--line-strong)}
-.role:before{content:'';position:absolute;left:22px;right:22px;top:0;height:2px;border-radius:0 0 2px 2px}
-.role.ops:before{background:linear-gradient(90deg,var(--ops),transparent 70%)}
-.role.exec:before{background:linear-gradient(90deg,var(--exec),transparent 70%)}
-.role.review:before{background:linear-gradient(90deg,var(--review),transparent 70%)}
+.role:before{content:'';position:absolute;left:21px;right:21px;top:0;height:2px}
+.r1:before{background:linear-gradient(90deg,var(--v1),transparent 72%)}
+.r2:before{background:linear-gradient(90deg,var(--v2),transparent 72%)}
+.r3:before{background:linear-gradient(90deg,var(--v3),transparent 72%)}
 
-.who{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;letter-spacing:1.3px}
-.role.ops .who{color:var(--ops)}.role.exec .who{color:var(--exec)}.role.review .who{color:var(--review)}
+.who{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:1.4px}
+.r1 .who{color:var(--v1)}.r2 .who{color:var(--v2)}.r3 .who{color:var(--v3)}
 .who .k{width:5px;height:5px;border-radius:50%;background:currentColor}
-.role h2{margin:10px 0 2px;font-size:19px;font-weight:700;letter-spacing:-.4px}
-.role .def{font-size:12.5px;color:var(--faint);margin-bottom:14px}
-.role ul{margin:0 0 18px;padding:0;list-style:none}
-.role li{display:flex;gap:8px;font-size:12.5px;color:var(--sub);line-height:1.6;padding:3px 0}
-.role li i{flex:0 0 13px;height:13px;border-radius:4px;background:var(--accent-soft);color:var(--accent);
-  font-size:9px;font-style:normal;display:grid;place-items:center;margin-top:3px;font-weight:700}
-.role .go{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;transition:.18s;
-  background:var(--accent);color:#fff;box-shadow:0 2px 10px rgba(0,113,227,.22)}
-.role .go:hover{filter:brightness(1.06)}
-.role.ops .go{background:var(--ops);box-shadow:0 2px 10px rgba(11,123,214,.24)}
-.role.exec .go{background:linear-gradient(100deg,#b8860b,#d99f1e);box-shadow:0 2px 10px rgba(184,134,11,.24)}
-.role.review .go{background:var(--review);box-shadow:0 2px 10px rgba(94,92,230,.24)}
-.role .go em{font-style:normal;font-weight:700}
-.role .sub-link{margin-top:9px;text-align:center;font-size:11.5px;color:var(--faint)}
-.role .sub-link a{color:var(--accent);font-weight:600}
-.role .sub-link a:hover{text-decoration:underline}
+.role h2{margin:9px 0 3px;font-size:19px;font-weight:700;letter-spacing:-.4px}
+.role .def{font-size:12.5px;color:var(--faint);margin-bottom:13px;min-height:19px}
+.role ul{margin:0 0 16px;padding:0;list-style:none}
+.role li{display:flex;gap:8px;font-size:12.5px;color:var(--sub);line-height:1.55;padding:3px 0}
+.role li i{flex:0 0 13px;height:13px;border-radius:4px;background:var(--soft);color:var(--accent);
+  font-size:9px;font-style:normal;display:grid;place-items:center;margin-top:2px;font-weight:700}
+.role .go{margin-top:auto;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;transition:.18s}
+.role .go:hover{filter:brightness(1.07)}
+.r1 .go{background:var(--v1);box-shadow:0 2px 10px rgba(94,92,230,.24)}
+.r2 .go{background:linear-gradient(100deg,#b8860b,#d99f1e);box-shadow:0 2px 10px rgba(184,134,11,.24)}
+.r3 .go{background:var(--v3);box-shadow:0 2px 10px rgba(11,123,214,.24)}
+.role .alt{margin-top:9px;text-align:center;font-size:11.5px;color:var(--faint)}
+.role .alt a{color:var(--accent);font-weight:600}
+.role .alt a:hover{text-decoration:underline}
 
-/* 说明条 */
-.note{margin-top:38px;padding:18px 22px;border-radius:16px;border:1px solid var(--line);
-  background:var(--card);backdrop-filter:blur(20px);font-size:12.5px;color:var(--sub);line-height:1.75}
+.note{margin-top:36px;padding:17px 21px;border-radius:15px;border:1px solid var(--line);
+  background:var(--card);backdrop-filter:blur(20px);font-size:12.5px;color:var(--sub);line-height:1.8}
 .note b{color:var(--text);font-weight:600}
-.note .row{display:flex;gap:10px;align-items:baseline}
-.note .row span:first-child{flex:0 0 68px;color:var(--faint);font-size:11px;letter-spacing:.6px}
+.note div{display:flex;gap:10px;align-items:baseline;margin:2px 0}
+.note div span:first-child{flex:0 0 62px;color:var(--faint);font-size:11px;letter-spacing:.6px}
 
-.pfoot{padding:26px 0 0;margin-top:34px;border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;line-height:1.85}
+.pfoot{padding:25px 0 0;margin-top:32px;border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;line-height:1.85}
 .pfoot a{color:var(--accent)}
 
 @media (max-width:880px){
-  .w{padding:0 17px}
-  .roles{grid-template-columns:1fr;gap:13px}
-  .role{padding:19px 19px 17px}
-  h1{font-size:27px}
-  .top{padding:16px 0 6px}
-  .top-link{display:none}
+  .w{padding:0 17px}.roles{grid-template-columns:1fr;gap:13px}
+  .role{padding:19px 18px 17px}h1{font-size:28px}
+  .top{padding:18px 0 6px}.top .only{display:none}
 }
-@media print{.roles{grid-template-columns:1fr 1fr 1fr}.role{box-shadow:none;border:1px solid #ddd;background:#fff}}
 </style>
 </head>
 <body>
 <div class="w">
 
 <div class="top">
-  <div class="brand">
-    <span class="mark">宇</span>
-    <div><b>宇泰智能数据中心</b><span>UTEK · DATA CENTER</span></div>
-  </div>
-  <a class="top-link" href="catalog.html">全部版本目录 →</a>
+  <div class="brand"><span class="mark">宇</span>
+    <div><b>宇泰智能数据中心</b><span>UTEK · DATA CENTER</span></div></div>
+  <div class="only">演示环境 · 合成数据</div>
 </div>
 
 <section class="hero">
-  <div class="eyebrow">ROLE-BASED ENTRY</div>
-  <h1>同一套数据，<br>三种读法。</h1>
-  <p class="lead">值班的人要处置，拍板的人要取舍，评审的人要能力。先选你是谁——别自己在十几个版本里找路。</p>
+  <div class="eyebrow">OPEN THE RIGHT DOOR</div>
+  <h1>你从<em>哪扇门</em>进来？</h1>
+  <p class="lead">同一套东西，三种人想看的东西完全不同。参观的人要三分钟看懂，老板要今天的取舍，客户要能核对的能力清单——先选门，别在十几个版本里找路。</p>
 </section>
 
 <div class="roles">
 
-  <div class="role ops">
-    <div class="who"><span class="k"></span>值班 · 每班 8 小时</div>
-    <h2>当班的人</h2>
-    <div class="def">盯屏、接告警、处置、留痕</div>
+  <div class="role r1">
+    <div class="who"><span class="k"></span>参观 · 三分钟</div>
+    <h2>路过看一眼的人</h2>
+    <div class="def">第一次来，只想搞清楚这是什么</div>
     <ul>
-      <li><i>1</i><span>现在每一台设备是什么值，哪台在漂</span></li>
-      <li><i>2</i><span>异常时先看谁、谁会被通知</span></li>
-      <li><i>3</i><span>处置完在哪留一条记录，下次能查到</span></li>
+      <li><i>1</i><span>一句话说清它到底在干什么</li>
+      <li><i>2</i><span>只给你一个地方看，不用挑</li>
+      <li><i>3</i><span>不懂技术也能看完</li>
     </ul>
-    <a class="go" href="yutai-v13-8/index.html"><span>进入机房态势</span><em>→</em></a>
-    <div class="sub-link">先进场景条里的 <a href="yutai-v13-8/index.html">⏱ 演进</a>，看"不处理会怎样"</div>
+    <a class="go" href="tour.html"><span>三分钟看懂</span><span>→</span></a>
+    <div class="alt">想直奔最有冲击力的：<a href="yutai-v13-8/index.html">V13.8</a></div>
   </div>
 
-  <div class="role exec">
-    <div class="who"><span class="k"></span>拍板 · 每天早上 3 分钟</div>
-    <h2>做决定的人</h2>
-    <div class="def">不看图表，只看取舍</div>
+  <div class="role r2">
+    <div class="who"><span class="k"></span>老板 · 每天早上</div>
+    <h2>要做决定的人</h2>
+    <div class="def">这套东西你已经有了，每天要看取舍</div>
     <ul>
-      <li><i>1</i><span>今天只有三件事，不是三十件</span></li>
-      <li><i>2</i><span>每件都写清：谁在动、你要做什么</span></li>
-      <li><i>3</i><span>代价写出来——批了多花多少，不批会怎样</span></li>
+      <li><i>1</i><span>今天只有三件事，不是三十件</li>
+      <li><i>2</i><span>每件写清谁在动、你要做什么</li>
+      <li><i>3</i><span>代价摆出来：批了花多少，不批会怎样</li>
     </ul>
-    <a class="go" href="role-exec.html"><span>打开今日一页纸</span><em>→</em></a>
-    <div class="sub-link">可直接 A4 打印，开会用</div>
+    <a class="go" href="role-exec.html"><span>打开今日一页纸</span><span>→</span></a>
+    <div class="alt">可直接 A4 打印，开会用</div>
   </div>
 
-  <div class="role review">
-    <div class="who"><span class="k"></span>评审 · 一次看完</div>
-    <h2>来看的人</h2>
-    <div class="def">客户、领导、外部同行</div>
+  <div class="role r3">
+    <div class="who"><span class="k"></span>潜在客户 · 一次看完</div>
+    <h2>在评估要不要用的人</h2>
+    <div class="def">不是来捧场，是来核对的</div>
     <ul>
-      <li><i>1</i><span>11 个版本各自能演什么、缺什么</span></li>
-      <li><i>2</i><span>这版什么时候该点，那版什么时候别点</span></li>
-      <li><i>3</i><span>全部合成数据，断网也能跑</span></li>
+      <li><i>1</i><span>十一个版本，各自能演什么</li>
+      <li><i>2</i><span>哪些做到了，哪些还没有——都写上</li>
+      <li><i>3</i><span>全部合成数据，不吹生产可用</li>
     </ul>
-    <a class="go" href="catalog.html"><span>打开能力矩阵</span><em>→</em></a>
-    <div class="sub-link">推荐从 <a href="yutai-v13-8/index.html">V13.8</a> 开始</div>
+    <a class="go" href="catalog.html"><span>看能力矩阵</span><span>→</span></a>
+    <div class="alt">推荐先点 <a href="yutai-v13-8/index.html">V13.8 主推版</a></div>
   </div>
 
 </div>
 
 <div class="note">
-  <div class="row"><span>为什么分</span><span><b>一个人打开系统找路，就是在付成本。</b>现在这十几个版本是同一套底层页面，按角色分流的是入口，不是系统——没有为谁复制一份，只让每个人少绕两步。</span></div>
-  <div class="row"><span>缺什么</span><span>还差真实数据源和真实责任人。这一页解决的是"进哪去"，不解决"为什么来"。</span></div>
+  <div><span>为什么分</span><span><b>三种人要的东西互相冲突。</b>参观的人怕复杂，老板怕废话，客户怕夸大。一个页面同时满足三个，结果是三个都不满意。</span></div>
+  <div><span>底线</span><span>分的只是入口，不是系统——底层还是同一套页面，没有为谁复制一份。</span></div>
+  <div><span>边界</span><span>全部为合成数据，用于概念演示；不代表真实生产指标，不具备生产级审计与权限治理。</span></div>
 </div>
 
 <div class="pfoot">
-  <p>全部页面零外部依赖 · 无 CDN · 断网可运行 · 支持系统深色模式自动切换</p>
-  <p>所有数据为合成数据，仅用于概念演示，不代表真实生产指标。</p>
+  <p>零外部依赖 · 无 CDN · 断网可运行 · 支持系统深色模式自动切换</p>
+  <p>另有一份 <a href="light.html">UI 方向样片</a>（浅色工作台取向），供设计讨论用。</p>
 </div>
 
 </div>

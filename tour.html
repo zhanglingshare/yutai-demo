@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>三分钟看懂 · 宇泰智能数据中心</title>
+<style>
+:root{
+  --bg:#fbfbfd; --text:#1d1d1f; --sub:#6e6e73; --faint:#a1a1a6;
+  --accent:#0071e3; --soft:rgba(0,113,227,.07); --line:rgba(0,0,0,.09);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#000;--text:#f5f5f7;--sub:#98989d;--faint:#6e6e73;--accent:#0a84ff;
+    --soft:rgba(10,132,255,.12);--line:rgba(255,255,255,.12);}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;color:var(--text);font-family:var(--font);font-size:17px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;background:var(--bg)}
+a{color:inherit;text-decoration:none}
+.read{max-width:660px;margin:0 auto;padding:0 26px}
+
+/* 顶部 */
+.nav{display:flex;align-items:center;gap:10px;padding:22px 0 0;font-size:12px;color:var(--faint)}
+.nav .brand{display:flex;align-items:center;gap:7px}
+.nav .mark{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+  background:linear-gradient(150deg,#3f8cf5,#0b6ae0);color:#fff;font-weight:800;font-size:11px}
+.nav .back{margin-left:auto;color:var(--accent);font-weight:600}
+.nav .back:hover{text-decoration:underline}
+
+/* 首屏 */
+.hero{padding:64px 0 20px}
+.kicker{font-size:11px;letter-spacing:2.4px;color:var(--accent);font-weight:700}
+h1{margin:18px 0 0;font-size:clamp(30px,5.4vw,50px);line-height:1.18;font-weight:700;letter-spacing:-1.2px}
+h1 em{font-style:normal;color:var(--accent)}
+.hero p{margin:22px 0 0;font-size:19px;line-height:1.7;color:var(--sub)}
+.hero p b{color:var(--text);font-weight:600}
+
+/* 分节 */
+.sect{padding:46px 0 0}
+.sect .no{font-size:11px;letter-spacing:2px;color:var(--faint);font-weight:700}
+h2{margin:8px 0 14px;font-size:25px;font-weight:700;letter-spacing:-.6px;line-height:1.3}
+.sect p{margin:0 0 14px;color:var(--sub);font-size:15.5px;line-height:1.8}
+.sect p b{color:var(--text);font-weight:600}
+
+/* 三段式 */
+.steps{margin:22px 0 0;border-top:1px solid var(--line)}
+.step{display:flex;gap:18px;padding:20px 0;border-bottom:1px solid var(--line)}
+.step .idx{flex:0 0 30px;font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.6px;padding-top:3px}
+.step .body b{display:block;font-size:16.5px;font-weight:700;margin-bottom:3px;letter-spacing:-.2px}
+.step .body span{font-size:14.5px;color:var(--sub);line-height:1.7}
+
+/* 唯一入口 */
+.only{margin:26px 0 0;padding:24px 26px;border-radius:18px;background:var(--soft);
+  border:1px solid rgba(0,113,227,.2)}
+@media (prefers-color-scheme:dark){.only{border-color:rgba(10,132,255,.26)}}
+.only .t{font-size:13px;letter-spacing:1.4px;color:var(--accent);font-weight:700;margin-bottom:8px}
+.only h3{margin:0 0 6px;font-size:20px;font-weight:700;letter-spacing:-.4px}
+.only p{margin:0 0 15px;font-size:14px;color:var(--sub)}
+.only a.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;
+  background:var(--accent);color:#fff;font-size:14px;font-weight:600;box-shadow:0 3px 14px rgba(0,113,227,.28);transition:.18s}
+.only a.btn:hover{filter:brightness(1.08)}
+
+/* 诚实 */
+.honest{margin:26px 0 0;padding:20px 24px;border-radius:16px;border:1px dashed var(--line)}
+.honest h3{margin:0 0 10px;font-size:15px;font-weight:700}
+.honest ul{margin:0;padding:0;list-style:none}
+.honest li{position:relative;padding-left:17px;font-size:14px;color:var(--sub);line-height:1.8}
+.honest li:before{content:'—';position:absolute;left:0;color:var(--faint)}
+.honest .c{margin-top:12px;font-size:14px;color:var(--text);font-weight:600}
+
+/* 底 */
+.endp{padding:46px 0 20px;margin-top:44px;border-top:1px solid var(--line)}
+.endp p{margin:0 0 10px;font-size:14px;color:var(--sub)}
+.endp .links{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:13.5px}
+.endp .links a{color:var(--accent);font-weight:600}
+.endp .links a:hover{text-decoration:underline}
+
+.pfoot{padding:24px 0 46px;color:var(--faint);font-size:11.5px;line-height:1.9}
+
+@media (max-width:640px){
+  .read{padding:0 18px}
+  .hero{padding:44px 0 12px}
+  h1{font-size:30px}
+  .hero p{font-size:16.5px}
+  .step{gap:12px}
+}
+</style>
+</head>
+<body>
+<div class="read">
+
+<div class="nav">
+  <span class="brand"><span class="mark">宇</span>宇泰智能数据中心</span>
+  <a class="back" href="index.html">← 回入口</a>
+</div>
+
+<section class="hero">
+  <div class="kicker">THREE MINUTES</div>
+  <h1>它做的事只有一件：<br>把设备的数据，变成<em>一句能执行的话</em>。</h1>
+  <p>一个数据机房里有很多设备——UPS、精密空调、门禁、摄像头。过去出了问题，靠人发现、人判断、人处置。这套东西想把这中间的两步换成机器做，<b>人只保留"批准"这一步</b>。</p>
+</section>
+
+<section class="sect">
+  <div class="no">01 / 三个动作</div>
+  <h2>看见、理解、授权</h2>
+  <div class="steps">
+    <div class="step">
+      <span class="idx">看见</span>
+      <div class="body"><b>设备不再各说各话</b>
+      <span>二十四台设备合成一张态势图。不用再在三个系统之间来回切换、对不上号。</span></div>
+    </div>
+    <div class="step">
+      <span class="idx">理解</span>
+      <div class="body"><b>不是一个超级 AI，是一群小 AI 分工</b>
+      <span>UPS 有 UPS 的、空调有空调的、安全有安全的。它们各自盯着自己的那一块，出问题时互相通报，而不是一个模型硬扛所有事。</span></div>
+    </div>
+    <div class="step">
+      <span class="idx">授权</span>
+      <div class="body"><b>AI 不直接动手</b>
+      <span>它只能提出建议——比如"建议调低两台空调"。要安全主管点头才执行，执行完留一条记录。这套东西里最值钱的，可能就是这一步。</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="no">02 / 只看一个地方</div>
+  <h2>如果你只有两分钟</h2>
+  <p>下面这一版是功能最全的。进去以后不用到处点，<b>只找场景条里那个 <span style="color:var(--accent)">⏱ 演进</span> 按钮</b>，看一次机房温度从正常走到告警、再被处理掉的全过程。</p>
+  <div class="only">
+    <div class="t">主推 · 完整演示</div>
+    <h3>V13.8 契约接力版</h3>
+    <p>五场景 · 3D 孪生 · 授权剧本 · 演进时钟</p>
+    <a class="btn" href="yutai-v13-8/index.html">打开 V13.8 <span>→</span></a>
+  </div>
+</section>
+
+<section class="sect">
+  <div class="no">03 / 说清楚它现在不是什么</div>
+  <h2>还没做到的</h2>
+  <p>看演示最容易被夸大的部分带偏，所以这里先讲清楚。</p>
+  <div class="honest">
+    <h3>现在这套东西的边界</h3>
+    <ul>
+      <li>所有设备数据是合成的，<b>没有接任何真实设备</b></li>
+      <li>AI 不会真的去关空调、开门，它只演流程，不执行动作</li>
+      <li>没有多人账号体系，审计记录存在浏览器内存里，<b>不具备生产级不可篡改</b></li>
+      <li>没有真实用户在用——它现在是一套讲法的道具</li>
+    </ul>
+    <div class="c">所以它现在能做的事，是把"该怎么干"讲清楚；还不能做的事，是真的替你干。</div>
+  </div>
+</section>
+
+<div class="endp">
+  <p>看完这三分钟，你可以停在"我懂了"，也可以往下走。</p>
+  <div class="links">
+    <a href="index.html">← 回入口</a>
+    <a href="catalog.html">看十一个版本的能力清单 →</a>
+    <a href="yutai-intro/intro.html">读序章 →</a>
+  </div>
+</div>
+
+<div class="pfoot">
+  <p>零外部依赖 · 无 CDN · 断网可运行 · 支持系统深色模式自动切换</p>
+  <p>全部为合成数据，仅用于概念演示。</p>
+</div>
+
+</div>
+</body>
+</html>
