@@ -2,291 +2,180 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="data:,">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>宇泰智能数据中心 · 版本导航</title>
+<link rel="icon" href="data:,">
+<title>宇泰智能数据中心 · 按角色进入</title>
 <style>
-:root{--bg:#050e1b;--card:#0b1b2d;--line:#1c4563;--text:#e7f6ff;--muted:#86a7bf;
---cyan:#43dafa;--teal:#33dfba;--amber:#ffc068;--red:#fa7780;--blue:#4d9fff;--violet:#a98bff}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(1200px 600px at 15% -10%,#0d2a3f 0,transparent 60%),var(--bg);
-color:var(--text);font:400 15px/1.65 Inter,'PingFang SC','Microsoft YaHei',system-ui,sans-serif;
--webkit-font-smoothing:antialiased;padding:0 0 80px}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-
-/* 头部 */
-header{padding:56px 0 30px;border-bottom:1px solid rgba(28,69,99,.55)}
-.kicker{display:flex;align-items:center;gap:10px;color:var(--cyan);font-size:12px;letter-spacing:2.4px;font-weight:600}
-.kicker i{width:26px;height:1px;background:var(--cyan);display:block}
-h1{margin:16px 0 10px;font-size:clamp(26px,4vw,40px);line-height:1.24;font-weight:700;letter-spacing:-.5px}
-h1 span{color:var(--cyan)}
-.sub{color:var(--muted);font-size:14.5px;max-width:660px}
-.tagline{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:6px 12px;border-radius:20px;
-border:1px solid rgba(255,192,104,.35);background:rgba(255,192,104,.07);color:var(--amber);font-size:12px}
-
-/* 直达 */
-.jump{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0 0}
-.jump a{display:flex;flex-direction:column;gap:3px;padding:14px 16px;border-radius:12px;
-border:1px solid var(--line);background:linear-gradient(150deg,rgba(11,27,45,.9),rgba(7,19,34,.9));
-transition:.2s}
-.jump a:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 10px 28px rgba(67,218,250,.13)}
-.jump .n{font-size:11px;letter-spacing:1.2px;color:var(--muted)}
-.jump .t{font-size:15px;font-weight:600}
-.jump .d{font-size:12px;color:var(--muted)}
-
-/* 矩阵 */
-section{margin-top:46px}
-h2{font-size:16px;letter-spacing:.5px;margin:0 0 6px;display:flex;align-items:center;gap:9px}
-h2 em{font-style:normal;color:var(--cyan);font-weight:700}
-.hint{color:var(--muted);font-size:12.5px;margin:0 0 16px}
-.tblbox{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:rgba(9,22,36,.7)}
-table{border-collapse:collapse;width:100%;min-width:820px;font-size:13px}
-th,td{padding:10px 12px;text-align:center;border-bottom:1px solid rgba(28,69,99,.45)}
-th{font-weight:600;font-size:11.5px;letter-spacing:.8px;color:var(--muted);background:rgba(28,69,99,.18);white-space:nowrap}
-td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:#081524;z-index:2;min-width:170px}
-tr:hover td{background:rgba(67,218,250,.045)}
-tr:hover td:first-child{background:#0a1c2e}
-.yes{color:var(--teal);font-weight:700}
-.no{color:#2f4c62}
-.half{color:var(--amber)}
-.vname{font-weight:600;font-size:13px}
-.vname small{display:block;color:#5d7f97;font-weight:400;font-size:11px}
-.badge{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;
-border:1px solid rgba(67,218,250,.4);color:var(--cyan);vertical-align:2px}
-
-/* 卡片 */
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;margin-top:6px}
-.card{position:relative;display:flex;flex-direction:column;padding:17px 18px 15px;border-radius:13px;
-border:1px solid var(--line);background:linear-gradient(155deg,rgba(11,27,45,.95),rgba(7,18,32,.95));
-transition:.2s;overflow:hidden}
-.card:before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--line);transition:.2s}
-.card:hover{border-color:rgba(67,218,250,.65);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.5)}
-.card:hover:before{background:var(--cyan)}
-.card.main{border-color:rgba(67,218,250,.7);box-shadow:0 0 0 1px rgba(67,218,250,.13) inset,0 12px 34px rgba(67,218,250,.1)}
-.card.main:before{background:var(--cyan)}
-.card .vno{font-size:11px;letter-spacing:1.6px;color:var(--cyan);font-weight:700}
-.card .vt{margin:6px 0 3px;font-size:16px;font-weight:700;letter-spacing:-.2px}
-.card .vd{color:var(--muted);font-size:12.5px;line-height:1.55;min-height:38px}
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 12px}
-.chip{padding:2.5px 8px;border-radius:5px;font-size:11px;border:1px solid rgba(28,69,99,.9);
-background:rgba(28,69,99,.22);color:#9dbccf}
-.chip.on{border-color:rgba(51,223,186,.4);background:rgba(51,223,186,.08);color:var(--teal)}
-.chip.hot{border-color:rgba(255,192,104,.45);background:rgba(255,192,104,.08);color:var(--amber)}
-.chip.off{border-color:rgba(250,119,128,.3);color:#8a6266}
-.when{font-size:11.5px;color:#6b8ba2;border-top:1px dashed rgba(28,69,99,.7);padding-top:9px;margin-top:auto}
-.when b{color:#9dbccf;font-weight:600}
-.card .go{margin-top:11px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--cyan)}
-.card .go:after{content:'→';transition:.2s}
-.card:hover .go:after{transform:translateX(4px)}
-.flag{position:absolute;top:14px;right:14px;font-size:10px;padding:2px 7px;border-radius:4px;
-background:rgba(67,218,250,.14);border:1px solid rgba(67,218,250,.4);color:var(--cyan);font-weight:600}
-
-/* 文档 */
-.doc{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.doc a{display:flex;align-items:center;gap:12px;padding:15px 17px;border-radius:11px;border:1px solid var(--line);
-background:rgba(11,27,45,.8);transition:.18s}
-.doc a:hover{border-color:var(--cyan);background:rgba(67,218,250,.06)}
-.doc .ico{width:32px;height:32px;flex:0 0 32px;border-radius:8px;display:grid;place-items:center;
-background:rgba(67,218,250,.1);border:1px solid rgba(67,218,250,.3);color:var(--cyan);font-size:14px}
-.doc .dt{font-size:13.5px;font-weight:600}
-.doc .dd{font-size:11.5px;color:var(--muted)}
-
-/* 页脚 */
-footer{margin-top:54px;padding-top:22px;border-top:1px solid rgba(28,69,99,.5);color:#5d7f97;font-size:12px}
-footer code{background:rgba(28,69,99,.3);padding:2px 6px;border-radius:4px;color:#9dbccf;font-size:11.5px}
-footer p{margin:5px 0}
-
-@media (max-width:720px){
- .wrap{padding:0 16px} header{padding:36px 0 22px}
- .jump{grid-template-columns:1fr} .cards{grid-template-columns:1fr}
- h2{font-size:14px}
+:root{
+  --bg:#f5f5f7; --card:rgba(255,255,255,.76); --card-solid:#fff;
+  --line:rgba(0,0,0,.08); --line-strong:rgba(0,0,0,.15);
+  --text:#1d1d1f; --sub:#6e6e73; --faint:#a1a1a6;
+  --accent:#0071e3; --accent-soft:rgba(0,113,227,.08);
+  --ops:#0b7bd6; --exec:#b8860b; --review:#5e5ce6;
+  --green:#1d9f6e; --amber:#b87a10;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 26px rgba(0,0,0,.055);
+  --shadow-hi:0 2px 8px rgba(0,0,0,.07),0 20px 48px rgba(0,0,0,.11);
+  --radius:20px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
 }
+@media (prefers-color-scheme:dark){
+  :root{--bg:#000;--card:rgba(28,28,30,.74);--card-solid:#1c1c1e;
+    --line:rgba(255,255,255,.11);--line-strong:rgba(255,255,255,.2);
+    --text:#f5f5f7;--sub:#98989d;--faint:#6e6e73;
+    --accent:#0a84ff;--accent-soft:rgba(10,132,255,.13);
+    --ops:#4aa8ff;--exec:#e0b341;--review:#8f8dff;
+    --green:#30d158;--amber:#ffd60a;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.5);
+    --shadow-hi:0 20px 48px rgba(0,0,0,.6);}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0 0 70px;color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  background:radial-gradient(880px 480px at 10% -8%,rgba(120,170,255,.19),transparent 62%),
+             radial-gradient(720px 440px at 92% -6%,rgba(255,190,120,.15),transparent 60%),var(--bg);
+  background-attachment:fixed}
+a{color:inherit;text-decoration:none}
+.w{max-width:1100px;margin:0 auto;padding:0 26px}
+
+.top{display:flex;align-items:center;gap:12px;padding:24px 0 10px}
+.brand{display:flex;align-items:center;gap:9px}
+.mark{width:27px;height:27px;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(150deg,#3f8cf5,#0b6ae0);color:#fff;font-weight:800;font-size:13px;
+  box-shadow:0 2px 8px rgba(11,106,224,.3)}
+.brand b{font-size:13.5px;font-weight:600;letter-spacing:.2px}
+.brand span{display:block;font-size:10.5px;color:var(--faint);letter-spacing:.6px;margin-top:-2px}
+.top-link{margin-left:auto;font-size:12px;color:var(--sub);padding:6px 12px;border-radius:9px;
+  border:1px solid var(--line);background:var(--card);backdrop-filter:blur(18px);transition:.16s}
+.top-link:hover{color:var(--accent);border-color:rgba(0,113,227,.35)}
+
+.hero{padding:30px 0 8px}
+.eyebrow{font-size:11px;letter-spacing:2.2px;color:var(--accent);font-weight:600}
+h1{margin:11px 0 0;font-size:clamp(27px,4.2vw,42px);line-height:1.18;font-weight:700;letter-spacing:-.9px}
+.lead{margin:13px 0 0;max-width:620px;color:var(--sub);font-size:14px;line-height:1.65}
+
+/* 角色卡 */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.role{position:relative;display:flex;flex-direction:column;padding:22px 22px 20px;border-radius:var(--radius);
+  background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
+  box-shadow:var(--shadow);transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,border-color .22s}
+.role:hover{transform:translateY(-4px);box-shadow:var(--shadow-hi);border-color:var(--line-strong)}
+.role:before{content:'';position:absolute;left:22px;right:22px;top:0;height:2px;border-radius:0 0 2px 2px}
+.role.ops:before{background:linear-gradient(90deg,var(--ops),transparent 70%)}
+.role.exec:before{background:linear-gradient(90deg,var(--exec),transparent 70%)}
+.role.review:before{background:linear-gradient(90deg,var(--review),transparent 70%)}
+
+.who{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;letter-spacing:1.3px}
+.role.ops .who{color:var(--ops)}.role.exec .who{color:var(--exec)}.role.review .who{color:var(--review)}
+.who .k{width:5px;height:5px;border-radius:50%;background:currentColor}
+.role h2{margin:10px 0 2px;font-size:19px;font-weight:700;letter-spacing:-.4px}
+.role .def{font-size:12.5px;color:var(--faint);margin-bottom:14px}
+.role ul{margin:0 0 18px;padding:0;list-style:none}
+.role li{display:flex;gap:8px;font-size:12.5px;color:var(--sub);line-height:1.6;padding:3px 0}
+.role li i{flex:0 0 13px;height:13px;border-radius:4px;background:var(--accent-soft);color:var(--accent);
+  font-size:9px;font-style:normal;display:grid;place-items:center;margin-top:3px;font-weight:700}
+.role .go{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;transition:.18s;
+  background:var(--accent);color:#fff;box-shadow:0 2px 10px rgba(0,113,227,.22)}
+.role .go:hover{filter:brightness(1.06)}
+.role.ops .go{background:var(--ops);box-shadow:0 2px 10px rgba(11,123,214,.24)}
+.role.exec .go{background:linear-gradient(100deg,#b8860b,#d99f1e);box-shadow:0 2px 10px rgba(184,134,11,.24)}
+.role.review .go{background:var(--review);box-shadow:0 2px 10px rgba(94,92,230,.24)}
+.role .go em{font-style:normal;font-weight:700}
+.role .sub-link{margin-top:9px;text-align:center;font-size:11.5px;color:var(--faint)}
+.role .sub-link a{color:var(--accent);font-weight:600}
+.role .sub-link a:hover{text-decoration:underline}
+
+/* 说明条 */
+.note{margin-top:38px;padding:18px 22px;border-radius:16px;border:1px solid var(--line);
+  background:var(--card);backdrop-filter:blur(20px);font-size:12.5px;color:var(--sub);line-height:1.75}
+.note b{color:var(--text);font-weight:600}
+.note .row{display:flex;gap:10px;align-items:baseline}
+.note .row span:first-child{flex:0 0 68px;color:var(--faint);font-size:11px;letter-spacing:.6px}
+
+.pfoot{padding:26px 0 0;margin-top:34px;border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;line-height:1.85}
+.pfoot a{color:var(--accent)}
+
+@media (max-width:880px){
+  .w{padding:0 17px}
+  .roles{grid-template-columns:1fr;gap:13px}
+  .role{padding:19px 19px 17px}
+  h1{font-size:27px}
+  .top{padding:16px 0 6px}
+  .top-link{display:none}
+}
+@media print{.roles{grid-template-columns:1fr 1fr 1fr}.role{box-shadow:none;border:1px solid #ddd;background:#fff}}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="w">
 
-<header>
-  <div class="kicker"><i></i>UTEK · 宇泰智能数据中心</div>
-  <h1>不是把屏幕做大，<br>是把<span>判断做短</span>。</h1>
-  <p class="sub">十一个版本，一条进化线。这不是"哪个好看点哪个"的展厅，而是一份可核对的能力台账——每个版本能演什么、缺什么，都写在下面。</p>
-  <span class="tagline">◆ 演示环境 · 全部为合成数据</span>
-
-  <div class="jump">
-    <a href="yutai-v13-8/index.html">
-      <span class="n">主推 · 完整演示</span>
-      <span class="t">V13.8 契约接力版</span>
-      <span class="d">五场景 + 3D 孪生 + 授权剧本 + 演进时钟</span>
-    </a>
-    <a href="yutai-v13-9/index.html">
-      <span class="n">机制证明</span>
-      <span class="t">V13.9 词元内核</span>
-      <span class="d">回答"凭什么越用越准"</span>
-    </a>
-    <a href="yutai-v15-capability/index.html">
-      <span class="n">独立产品线</span>
-      <span class="t">V15 能力进化实验室</span>
-      <span class="d">六维评估 · 七阶漏斗 · 可跑测试</span>
-    </a>
+<div class="top">
+  <div class="brand">
+    <span class="mark">宇</span>
+    <div><b>宇泰智能数据中心</b><span>UTEK · DATA CENTER</span></div>
   </div>
-</header>
+  <a class="top-link" href="catalog.html">全部版本目录 →</a>
+</div>
 
-<section>
-  <h2><em>01</em> 能力矩阵</h2>
-  <p class="hint">横着看差异，竖着看进补。✓ 表示该版本直接可演示，◦ 表示有雏形但不完整。</p>
-  <div class="tblbox">
-  <table>
-    <thead>
-      <tr><th>版本</th><th>语音指令</th><th>授权剧本</th><th>审计留痕</th><th>词元内核</th><th>3D 孪生</th><th>多场景</th><th>演进时钟</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><span class="vname">V4<small>智能设备数据中心</small></span></td><td class="half">◦ 播报</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="half">◦ 单画布</td><td class="no">—</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V5.0 在线版<small>概念板</small></span></td><td class="half">◦ 播报</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V5.4<small>设备可视化与小宇</small></span></td><td class="yes">✓</td><td class="no">—</td><td class="half">◦ 事件墙</td><td class="no">—</td><td class="half">◦ 图片示意</td><td class="no">—</td><td class="yes">✓ 原生</td></tr>
-      <tr><td><span class="vname">V13<small>小宇主控运行中心</small></span></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="yes">✓ 5 场景</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V13.2<small>语音基准</small></span></td><td class="yes">✓✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V13.4<small>分布式 AI 实验场</small></span></td><td class="yes">✓✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="half">◦ 1 画布</td><td class="yes">✓</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V13.8<small>契约接力版</small><span class="badge">主推</span></span></td><td class="yes">✓✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓✓ 10 画布</td><td class="yes">✓ 5 场景</td><td class="yes">✓ 新增</td></tr>
-      <tr><td><span class="vname">V13.8 轻量页<small>占位壳</small></span></td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V13.9<small>词元内核</small></span></td><td class="yes">✓✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ 20 词元</td><td class="yes">✓✓</td><td class="yes">✓ 5 场景</td><td class="yes">✓ 新增</td></tr>
-      <tr><td><span class="vname">V14<small>精简版</small></span></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-      <tr><td><span class="vname">V15<small>企业能力进化实验室</small></span></td><td class="half">◦ TTS</td><td class="no">—</td><td class="half">◦ 内存链</td><td class="yes">✓ 事件词元</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
-    </tbody>
-  </table>
-  </div>
+<section class="hero">
+  <div class="eyebrow">ROLE-BASED ENTRY</div>
+  <h1>同一套数据，<br>三种读法。</h1>
+  <p class="lead">值班的人要处置，拍板的人要取舍，评审的人要能力。先选你是谁——别自己在十几个版本里找路。</p>
 </section>
 
-<section>
-  <h2><em>02</em> 全部版本（由早到晚）</h2>
-  <p class="hint">按时间顺序排列。每张卡下面一行写明"什么时候该点它"。</p>
-  <div class="cards">
+<div class="roles">
 
-    <a class="card" href="yutai-v4/index.html">
-      <span class="vno">V4 · 2023 形态</span>
-      <div class="vt">智能设备数据中心</div>
-      <div class="vd">最早的驾驶舱版。单个画布、32 个按钮、30 段外置中文播报音频。</div>
-      <div class="chips"><span class="chip on">中文播报</span><span class="chip">单画布</span><span class="chip off">无审计</span></div>
-      <div class="when"><b>什么时候点：</b>讲"我们最早长什么样"时，只需要看一分钟。</div>
-      <div class="go">打开 V4</div>
-    </a>
-
-    <a class="card" href="yutai-v5-online/index.html">
-      <span class="vno">V5.0 · 概念板</span>
-      <div class="vt">在线概念版</div>
-      <div class="vd">三块纯文案板：全域态势 / AI 与工具执行现场 / ABCD 数据边界。</div>
-      <div class="chips"><span class="chip">概念三板</span><span class="chip off">无交互</span></div>
-      <div class="when"><b>什么时候点：</b>只用来讲"最初的三句话"。</div>
-      <div class="go">打开 V5.0</div>
-    </a>
-
-    <a class="card" href="yutai-v5-full/index.html">
-      <span class="vno">V5.4 · 演进原点</span>
-      <div class="vt">设备可视化与小宇</div>
-      <div class="vd">第一次出现"下一时段 +15 分钟"推演。这个机制后来在 V13 系列里失传了。</div>
-      <div class="chips"><span class="chip on">语音</span><span class="chip hot">演进时间轴（原生）</span><span class="chip">用电透视</span><span class="chip">UPS 专属 AI</span></div>
-      <div class="when"><b>什么时候点：</b>看"演进推演"的原始形态。已移植进 V13.8。</div>
-      <div class="go">打开 V5.4</div>
-    </a>
-
-    <a class="card" href="yutai-v13/index.html">
-      <span class="vno">V13 · 骨架成型</span>
-      <div class="vt">小宇主控的智能设备运行中心</div>
-      <div class="vd">五个核心页签 + 五场景切换的完整骨架。126 个按钮，第一次把授权与审计串起来。</div>
-      <div class="chips"><span class="chip on">语音</span><span class="chip on">授权剧本</span><span class="chip on">审计</span><span class="chip">5 场景</span></div>
-      <div class="when"><b>什么时候点：</b>作为"骨架版本"对照，或验证功能是否齐全。</div>
-      <div class="go">打开 V13</div>
-    </a>
-
-    <a class="card" href="yutai-v13-2/index.html">
-      <span class="vno">V13.2 · 语音基准</span>
-      <div class="vt">V13.2 语音基准版</div>
-      <div class="vd">在 V13 上加厚语音链路。与 V13 正文几乎一字不差，多 2 处语音调用。</div>
-      <div class="chips"><span class="chip on">语音增强</span><span class="chip on">授权</span><span class="chip on">审计</span></div>
-      <div class="when"><b>什么时候点：</b>只在你关心语音链路细节时。日常演示可跳过。</div>
-      <div class="go">打开 V13.2</div>
-    </a>
-
-    <a class="card" href="yutai-v13-6/index.html">
-      <span class="vno">V13.4 · 实验场</span>
-      <div class="vt">分布式产品实验场</div>
-      <div class="vd">第一次引入"产品级专业 AI"实验场，10 个脚本块，按钮增至 140。</div>
-      <div class="chips"><span class="chip on">语音</span><span class="chip on">实验场</span><span class="chip">1 画布</span></div>
-      <div class="when"><b>什么时候点：</b>看"实验场"模块怎么长出来。</div>
-      <div class="go">打开 V13.4</div>
-    </a>
-
-    <a class="card main" href="yutai-v13-8/index.html">
-      <span class="flag">主推</span>
-      <span class="vno">V13.8 · 契约接力</span>
-      <div class="vt">运行中心 · 完整演示版</div>
-      <div class="vd">功能最全的一版：五场景、3D 孪生、关系全景、数据洞察、授权剧本、60+ 条语音指令。</div>
-      <div class="chips"><span class="chip on">语音 60+</span><span class="chip on">授权剧本</span><span class="chip on">审计</span><span class="chip on">3D 10 画布</span><span class="chip hot">演进时钟 · 升级</span></div>
-      <div class="when"><b>什么时候点：</b>任何对外演示。这一版就是"完成度"的答案。</div>
-      <div class="go">打开 V13.8</div>
-    </a>
-
-    <a class="card" href="yutai-v13.8/index.html">
-      <span class="vno">V13.8 · 轻量页</span>
-      <div class="vt">占位壳（无功能）</div>
-      <div class="vd">0 脚本、0 按钮、0 画布，12 KB 几乎全是内联样式。打开是空白页。</div>
-      <div class="chips"><span class="chip off">无脚本</span><span class="chip off">无交互</span><span class="chip off">仅占位</span></div>
-      <div class="when"><b>什么时候点：</b>不建议点。保留只为存档，等同空文件。</div>
-      <div class="go">打开（空壳）</div>
-    </a>
-
-    <a class="card" href="yutai-v13-9/index.html">
-      <span class="flag">机制</span>
-      <span class="vno">V13.9 · 词元内核</span>
-      <div class="vt">V13.8 + 专业词元内核</div>
-      <div class="vd">在 V13.8 之上加 P0 验证台：20 个六域词元、事件注入、路径对比、词元详情。</div>
-      <div class="chips"><span class="chip on">V13.8 全部</span><span class="chip hot">词元内核</span><span class="chip hot">演进时钟 · 升级</span></div>
-      <div class="when"><b>什么时候点：</b>被追问"凭什么越用越准"时，切到这一版。</div>
-      <div class="go">打开 V13.9</div>
-    </a>
-
-    <a class="card" href="yutai-v14/index.html">
-      <span class="vno">V14 · 精简</span>
-      <div class="vt">五页签精简版</div>
-      <div class="vd">只留全局态势 / 机房可视化 / 小宇团队 / 安全边界 / 审计记录。去掉 3D、关系全景、洞察、实验场、场景切换。</div>
-      <div class="chips"><span class="chip on">语音</span><span class="chip on">授权</span><span class="chip on">审计</span><span class="chip">纯主线</span></div>
-      <div class="when"><b>什么时候点：</b>正式汇报，不希望被花活干扰时用这版。</div>
-      <div class="go">打开 V14</div>
-    </a>
-
-    <a class="card" href="yutai-v15-capability/index.html">
-      <span class="flag">实验室</span>
-      <span class="vno">V15 · 能力进化</span>
-      <div class="vt">企业能力进化实验室</div>
-      <div class="vd">六维评估含 Wilson 置信区间、七阶成长漏斗、词元/大模型/人工三路对照。带 kernel 与自动测试。</div>
-      <div class="chips"><span class="chip on">六维评估</span><span class="chip on">七阶漏斗</span><span class="chip on">三路对照</span><span class="chip">可跑测试</span></div>
-      <div class="when"><b>什么时候点：</b>讲"经验怎么变成能力"，需要数字说话时。</div>
-      <div class="go">打开 V15</div>
-    </a>
-
+  <div class="role ops">
+    <div class="who"><span class="k"></span>值班 · 每班 8 小时</div>
+    <h2>当班的人</h2>
+    <div class="def">盯屏、接告警、处置、留痕</div>
+    <ul>
+      <li><i>1</i><span>现在每一台设备是什么值，哪台在漂</span></li>
+      <li><i>2</i><span>异常时先看谁、谁会被通知</span></li>
+      <li><i>3</i><span>处置完在哪留一条记录，下次能查到</span></li>
+    </ul>
+    <a class="go" href="yutai-v13-8/index.html"><span>进入机房态势</span><em>→</em></a>
+    <div class="sub-link">先进场景条里的 <a href="yutai-v13-8/index.html">⏱ 演进</a>，看"不处理会怎样"</div>
   </div>
-</section>
 
-<section>
-  <h2><em>03</em> 说明文档</h2>
-  <p class="hint">两篇原始说明，读之前先看这里的定位。</p>
-  <div class="doc">
-    <a href="yutai-intro/intro.html">
-      <span class="ico">◈</span>
-      <div><div class="dt">序章 · 为什么做这套东西</div><div class="dd">三个进化方向：看见设备 / 理解设备 / 授权行动</div></div>
-    </a>
-    <a href="yutai-intro/versions.html">
-      <span class="ico">⟐</span>
-      <div><div class="dt">版本演进说明</div><div class="dd">从 V4 到 V15 的原始版本记述</div></div>
-    </a>
+  <div class="role exec">
+    <div class="who"><span class="k"></span>拍板 · 每天早上 3 分钟</div>
+    <h2>做决定的人</h2>
+    <div class="def">不看图表，只看取舍</div>
+    <ul>
+      <li><i>1</i><span>今天只有三件事，不是三十件</span></li>
+      <li><i>2</i><span>每件都写清：谁在动、你要做什么</span></li>
+      <li><i>3</i><span>代价写出来——批了多花多少，不批会怎样</span></li>
+    </ul>
+    <a class="go" href="role-exec.html"><span>打开今日一页纸</span><em>→</em></a>
+    <div class="sub-link">可直接 A4 打印，开会用</div>
   </div>
-</section>
 
-<footer>
-  <p>本站为零外部依赖的纯本地静态站点 · 断网可运行 · 无 CDN 调用</p>
-  <p>所有数据均为合成数据，仅用于概念演示，不代表真实生产指标。</p>
-  <p>启动方式：本目录内运行 <code>python -m http.server 8080 --bind 0.0.0.0</code>，局域网访问 <code>http://本机IP:8080</code></p>
-</footer>
+  <div class="role review">
+    <div class="who"><span class="k"></span>评审 · 一次看完</div>
+    <h2>来看的人</h2>
+    <div class="def">客户、领导、外部同行</div>
+    <ul>
+      <li><i>1</i><span>11 个版本各自能演什么、缺什么</span></li>
+      <li><i>2</i><span>这版什么时候该点，那版什么时候别点</span></li>
+      <li><i>3</i><span>全部合成数据，断网也能跑</span></li>
+    </ul>
+    <a class="go" href="catalog.html"><span>打开能力矩阵</span><em>→</em></a>
+    <div class="sub-link">推荐从 <a href="yutai-v13-8/index.html">V13.8</a> 开始</div>
+  </div>
+
+</div>
+
+<div class="note">
+  <div class="row"><span>为什么分</span><span><b>一个人打开系统找路，就是在付成本。</b>现在这十几个版本是同一套底层页面，按角色分流的是入口，不是系统——没有为谁复制一份，只让每个人少绕两步。</span></div>
+  <div class="row"><span>缺什么</span><span>还差真实数据源和真实责任人。这一页解决的是"进哪去"，不解决"为什么来"。</span></div>
+</div>
+
+<div class="pfoot">
+  <p>全部页面零外部依赖 · 无 CDN · 断网可运行 · 支持系统深色模式自动切换</p>
+  <p>所有数据为合成数据，仅用于概念演示，不代表真实生产指标。</p>
+</div>
 
 </div>
 </body>

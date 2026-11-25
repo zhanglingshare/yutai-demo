@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>今日三件事 · 宇泰</title>
+<style>
+:root{
+  --bg:#f5f5f7;--card:rgba(255,255,255,.8);--line:rgba(0,0,0,.08);--line2:rgba(0,0,0,.14);
+  --text:#1d1d1f;--sub:#6e6e73;--faint:#a1a1a6;
+  --accent:#0071e3;--soft:rgba(0,113,227,.08);
+  --red:#c9382f;--amber:#b87a10;--green:#1d9f6e;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 26px rgba(0,0,0,.055);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#000;--card:rgba(28,28,30,.76);--line:rgba(255,255,255,.11);--line2:rgba(255,255,255,.2);
+    --text:#f5f5f7;--sub:#98989d;--faint:#6e6e73;--accent:#0a84ff;--soft:rgba(10,132,255,.13);
+    --red:#ff453a;--amber:#ffd60a;--green:#30d158;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.5);}
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0 0 60px;font-family:var(--font);font-size:15px;line-height:1.6;color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  background:radial-gradient(760px 420px at 8% -10%,rgba(120,170,255,.16),transparent 62%),
+             radial-gradient(640px 400px at 95% -8%,rgba(255,200,140,.14),transparent 60%),var(--bg);
+  background-attachment:fixed}
+a{color:inherit;text-decoration:none}
+.w{max-width:880px;margin:0 auto;padding:0 26px}
+
+.top{display:flex;align-items:center;gap:12px;padding:22px 0 6px}
+.brand{display:flex;align-items:center;gap:8px}
+.mark{width:25px;height:25px;border-radius:7px;display:grid;place-items:center;
+  background:linear-gradient(150deg,#3f8cf5,#0b6ae0);color:#fff;font-weight:800;font-size:12px}
+.brand b{font-size:12.5px;font-weight:600}
+.top .meta{margin-left:auto;text-align:right;font-size:11px;color:var(--faint);line-height:1.5}
+
+.head{padding:26px 0 4px}
+.date{font-size:11.5px;letter-spacing:1.6px;color:var(--faint);font-weight:600}
+h1{margin:8px 0 0;font-size:clamp(26px,4vw,38px);font-weight:700;letter-spacing:-.9px;line-height:1.2}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{margin:10px 0 0;font-size:13px;color:var(--sub)}
+
+/* 事项 */
+.item{position:relative;margin-top:15px;padding:20px 22px 18px;border-radius:18px;
+  background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:var(--shadow)}
+.item.first{border-color:rgba(201,56,47,.28);box-shadow:0 1px 2px rgba(0,0,0,.04),0 14px 40px rgba(201,56,47,.10)}
+@media (prefers-color-scheme:dark){.item.first{border-color:rgba(255,69,58,.32);box-shadow:0 14px 40px rgba(255,69,58,.14)}}
+
+.hd{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.8px;padding:3px 9px;border-radius:6px}
+.tag.decide{color:var(--red);background:rgba(201,56,47,.09);border:1px solid rgba(201,56,47,.22)}
+.tag.know{color:var(--amber);background:rgba(184,122,16,.09);border:1px solid rgba(184,122,16,.22)}
+.tag.skip{color:var(--green);background:rgba(29,159,110,.09);border:1px solid rgba(29,159,110,.2)}
+@media (prefers-color-scheme:dark){
+  .tag.decide{color:#ff453a;background:rgba(255,69,58,.12);border-color:rgba(255,69,58,.28)}
+  .tag.know{color:#ffd60a;background:rgba(255,214,10,.12);border-color:rgba(255,214,10,.28)}
+  .tag.skip{color:#30d158;background:rgba(48,209,88,.12);border-color:rgba(48,209,88,.26)}
+}
+.hd .no{margin-left:auto;font-size:11px;color:var(--faint);font-weight:600;font-variant-numeric:tabular-nums}
+
+h3{margin:0 0 8px;font-size:18.5px;font-weight:700;letter-spacing:-.4px;line-height:1.35}
+.item.first h3{font-size:20px}
+.verdict{margin:0 0 14px;font-size:13.5px;color:var(--sub);line-height:1.65}
+.verdict b{color:var(--text);font-weight:600}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.cell{padding:10px 12px;border-radius:11px;background:var(--soft);border:1px solid var(--line)}
+.cell .k{display:block;font-size:10px;letter-spacing:1px;color:var(--faint);font-weight:600;margin-bottom:3px}
+.cell .v{font-size:12.5px;line-height:1.55}
+.cell.cost{background:transparent;border-style:dashed}
+
+.ask{display:flex;gap:9px;align-items:flex-start;padding:11px 13px;border-radius:11px;
+  background:linear-gradient(100deg,rgba(0,113,227,.09),rgba(0,113,227,.03));border:1px solid rgba(0,113,227,.22)}
+.ask .b{flex:0 0 18px;height:18px;border-radius:5px;background:var(--accent);color:#fff;display:grid;place-items:center;
+  font-size:10px;font-weight:700;margin-top:1px}
+.ask .t{font-size:12.5px;line-height:1.6}
+.ask .t b{font-weight:600}
+.ask .t em{font-style:normal;color:var(--accent);font-weight:600}
+
+.summary{margin-top:26px;padding:16px 20px;border-radius:14px;border:1px solid var(--line);
+  background:var(--card);backdrop-filter:blur(20px);font-size:12.5px;color:var(--sub);line-height:1.7}
+.summary b{color:var(--text)}
+
+.rules{margin-top:20px;padding:16px 20px;border-radius:14px;border:1px dashed var(--line2);font-size:12px;color:var(--sub);line-height:1.8}
+.rules h4{margin:0 0 7px;font-size:11px;letter-spacing:1.2px;color:var(--faint);font-weight:600}
+.rules li{margin:0;padding:0;list-style:none}
+.rules ol{margin:0;padding-left:18px}
+.rules ol li{list-style:decimal;padding:1px 0}
+
+.pfoot{padding:22px 0 0;margin-top:28px;border-top:1px solid var(--line);color:var(--faint);font-size:11px;line-height:1.85}
+.pfoot a{color:var(--accent)}
+
+@media (max-width:720px){
+  .w{padding:0 16px}
+  .grid{grid-template-columns:1fr}
+  .item{padding:17px 16px 15px}
+  h1{font-size:26px}
+}
+
+@media print{
+  :root{--bg:#fff;--card:#fff;--text:#111;--sub:#444;--faint:#777;--line:#ddd;--line2:#ccc;--soft:#f7f7f7}
+  body{background:#fff;padding:0}
+  .w{max-width:none;padding:0}
+  .item{box-shadow:none;backdrop-filter:none;page-break-inside:avoid;margin-top:12px}
+  .item.first{box-shadow:none}
+  .top .meta,.pfoot a{color:#777}
+  h1{font-size:26pt}
+  @page{margin:14mm}
+}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="top">
+  <div class="brand"><span class="mark">宇</span><b>宇泰 · 每日一页</b></div>
+  <div class="meta">2026-11-26 星期四<br>生成 07:00 · 演示数据</div>
+</div>
+
+<section class="head">
+  <div class="date">THURSDAY · 08:00</div>
+  <h1>今天，<em>三件事</em>。</h1>
+  <p class="lede">只写需要你拍板的。能自动判的，这一页上不会出现。</p>
+</section>
+
+<!-- 1 -->
+<div class="item first">
+  <div class="hd"><span class="tag decide">要拍板</span><span class="no">01</span></div>
+  <h3>UPS-03 温升，预计 15:00 前后越过 30℃ 阈值</h3>
+  <p class="verdict">不是设备故障——是<b>负载曲线跑在制冷能力前面</b>。09:45 起连续两段越限，值班已记录，尚未升级为告警。</p>
+  <div class="grid">
+    <div class="cell"><span class="k">已经做了什么</span><span class="v">空调侧备好「调低 2℃」方案，等授权；值班已待命。</span></div>
+    <div class="cell"><span class="k">谁在动</span><span class="v">UPS 小 AI + 空调小 AI 联合研判，值班班长跟进。</span></div>
+    <div class="cell cost"><span class="k">批了</span><span class="v">多耗约 <b>1.8%</b> 电 ≈ ￥420 / 月</span></div>
+    <div class="cell cost"><span class="k">不批</span><span class="v">大概率触发一次告警 + <b>40 分钟</b>处置 + 一次客户侧解释</span></div>
+  </div>
+  <div class="ask">
+    <span class="b">?</span>
+    <span class="t">你要做：<b>批</b> / <b>让它再跑一段</b> / <b>现在通知客户</b>　·　<a href="yutai-v13-8/index.html"><em>看这条推演 →</em></a><br>
+      <span style="color:var(--faint);font-size:11.5px">建议批。420 元对 40 分钟人工加一次客户解释，不划算的是后者。</span></span>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="item">
+  <div class="hd"><span class="tag know">要知道</span><span class="no">02</span></div>
+  <h3>研发返工率连续两周上升，本周 18%</h3>
+  <p class="verdict">80% 的返工集中在同一个动作：<b>需求变更没有同步到测试</b>。不是能力问题，是流程缺口。</p>
+  <div class="grid">
+    <div class="cell"><span class="k">已经做了什么</span><span class="v">已定位 3 个高频变更点，测试侧给出对比数据。</span></div>
+    <div class="cell"><span class="k">谁在动</span><span class="v">研发负责人已起草卡点方案，未上会。</span></div>
+    <div class="cell cost"><span class="k">设卡点</span><span class="v">每个需求多约 <b>半天</b></span></div>
+    <div class="cell cost"><span class="k">不设</span><span class="v">按当前斜率，下月约 <b>24%</b></span></div>
+  </div>
+  <div class="ask">
+    <span class="b">?</span>
+    <span class="t">你要做：<b>同意设卡点</b> / <b>先做两周试点</b>　·　<a href="yutai-v15-capability/index.html"><em>看返工归因 →</em></a></span>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="item">
+  <div class="hd"><span class="tag skip">可以不管</span><span class="no">03</span></div>
+  <h3>备件预算，采购已自行压到 3.2 万</h3>
+  <p class="verdict">低于你设的 5 万自动通过线，<b>已按规则放行</b>，无需你签字。列在这里只是让你知道它发生过。</p>
+  <div class="grid">
+    <div class="cell"><span class="k">为什么列出来</span><span class="v">让你确认"这条线划得对不对"，而不是让你批。</span></div>
+    <div class="cell"><span class="k">如果你觉得该变</span><span class="v">下次把它挪进「要拍板」，我照改。</span></div>
+  </div>
+</div>
+
+<div class="summary">
+  <b>本周一句话：</b>机房侧风险在可控区间，真正的上升项在研发流程；预算侧没有异常。
+  <span style="color:var(--faint)">　· 明早 07:00 自动更新</span>
+</div>
+
+<div class="rules">
+  <h4>这一页的规矩</h4>
+  <ol>
+    <li>只写需要你拍板或你需要知道的，其余不上这一页。</li>
+    <li>每件必须带代价——批和不批，各要付什么。</li>
+    <li>能自动判的（低于门槛、规则内）只做告知，不占你的决定。</li>
+  </ol>
+</div>
+
+<div class="pfoot">
+  <p>数据来源：演示数据（手工录入 + 合成）。真实部署时接设备网关与业务系统，形态不变。</p>
+  <p>本页支持 A4 打印 · <a href="index.html">← 返回角色入口</a> · <a href="yutai-v13-8/index.html">看背后那套运行中心 →</a></p>
+</div>
+
+</div>
+</body>
+</html>
