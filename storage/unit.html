@@ -302,7 +302,7 @@ details[open] summary:after{content:'▴'}
   .grid{grid-template-columns:1fr 1fr;height:auto}
   .grid>.panel{min-height:460px;overflow:visible}
   .grid>.stage{grid-column:1/-1;min-height:560px}
-.trace{grid-template-columns:repeat(3,1fr)}
+.trace{grid-template-columns:repeat(2,minmax(0,1fr))}
   .seg,.tools{display:none}
 }
 @media(max-width:680px){
@@ -314,14 +314,21 @@ details[open] summary:after{content:'▴'}
   .tools{order:4;margin-left:0;flex:1}
   .tools button{flex:1}
   .grid{display:flex;flex-direction:column}
-  .grid>.panel{min-height:auto;margin-bottom:10px;overflow:visible}
-  .grid>.panel:nth-child(3){order:1}
-  .grid>.panel:nth-child(2){order:2}
-  .grid>.panel:nth-child(1){order:3}
+  .grid>.panel{min-height:auto;margin-bottom:10px;overflow-x:hidden;min-width:0;width:100%;box-sizing:border-box}
+  .grid>.panel:nth-child(2){order:1}
+  .grid>.panel:nth-child(1){order:2}
+  .grid>.panel:nth-child(3){order:3}
   .grid>.stage{min-height:400px} .stage .scene{min-height:330px}
-.trace{grid-template-columns:repeat(3,1fr)}
-  .app{padding:0 12px 12px} .strip{padding:9px 14px} .strip .lb{display:none}
-  .kpi{display:none}
+.trace{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .app{padding:0 12px 12px;overflow-x:hidden}
+  .trace .tc,.kpi .k{overflow:hidden} .strip{padding:9px 14px} .strip .lb{display:none}
+  .kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px 12px 10px;box-sizing:border-box;max-width:100%}
+  .kpi .k:nth-child(1){display:none}
+  .kpi .demo{display:none}
+  .kpi .k{padding:6px 8px;border-radius:12px}
+  .kpi .k b{font-size:19px} .kpi .k small{font-size:9px;line-height:1.3;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .kpi .k{overflow:hidden}
+  .stage svg,.scene svg{max-width:100%;height:auto}
 }
 </style>
 </head>
@@ -507,8 +514,7 @@ details[open] summary:after{content:'▴'}
   <div class="rt" id="stripRt">已判 0 条</div>
 </footer>
 
-<script>
-/* ============================================================
+<script>/* ============================================================
    UT-ESS-03 · 储能柜 30 天运行判断（模拟）
    DSH 侧：接 → 存 → 判 → 门 → 记
    DeepSeek 侧：只把"判好的事实"说成人话
@@ -1313,7 +1319,6 @@ details[open] summary:after{content:'▴'}
   else boot();
 
 })();
-
 </script>
 
 
