@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>这笔账 · 我算三档</title>
+<style>
+:root{
+  --blue:#0A59F7; --blue2:#4B8BFF; --green:#12A05C; --orange:#E8890C; --red:#E5403A;
+  --ink:#0F1724; --ink2:#5A6675; --ink3:#8A96A6;
+  --line:#E4E9F0; --line2:#EFF3F8; --bg:#EDF1F7;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:26px 0 36px;color:var(--ink);
+  background:
+    radial-gradient(1100px 460px at 12% -12%,#DCE8FF 0,transparent 62%),
+    radial-gradient(900px 420px at 92% -8%,#EADCFC 0,transparent 60%),
+    var(--bg);
+  font-size:13px;-webkit-font-smoothing:antialiased}
+.page{max-width:1180px;margin:0 auto;padding:0 24px}
+
+.back{display:inline-block;font-size:10px;color:var(--ink3);text-decoration:none;margin-bottom:9px}
+.back:hover{color:var(--blue)}
+.head{margin-bottom:18px}
+.head .top{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.head h1{margin:0;font-size:32px;font-weight:600;letter-spacing:-.6px}
+.head .stamp{margin-left:auto;text-align:right;font-size:9.5px;color:var(--ink3);line-height:1.7}
+.head .sub{font-size:13px;color:var(--ink2);margin-top:9px;line-height:1.65}
+.head .sub b{color:var(--ink);font-weight:600}
+
+.panel{background:rgba(255,255,255,.9);border-radius:20px;padding:18px 22px 19px;
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 30px rgba(16,40,80,.07);
+  backdrop-filter:blur(20px) saturate(1.7);-webkit-backdrop-filter:blur(20px) saturate(1.7);
+  margin-bottom:13px}
+.ph{display:flex;align-items:baseline;gap:9px;margin-bottom:3px}
+.ph .no{font-size:9.5px;font-weight:700;color:#fff;background:var(--blue);border-radius:5px;
+  padding:3px 6px;letter-spacing:.5px}
+.ph h2{margin:0;font-size:15px;font-weight:600}
+.ph .tail{margin-left:auto;font-size:10px;color:var(--ink3)}
+.note{font-size:11px;color:var(--ink3);line-height:1.65;margin:5px 0 13px}
+.note b{color:var(--ink2);font-weight:500}
+
+/* S1 */
+.leaks{display:flex;flex-direction:column;gap:11px}
+.lk{display:grid;grid-template-columns:186px 1fr 126px;align-items:center;gap:14px}
+.lk .nm{font-size:11.5px;line-height:1.45}
+.lk .nm b{display:block;font-size:12.5px;font-weight:600}
+.lk .nm span{color:var(--ink3);font-size:9.5px}
+.barwrap{height:24px}
+.bar{position:relative;height:24px;border-radius:6px;background:#F1F5FA;display:flex;min-width:60px}
+.bar .keep{height:100%;min-width:7px;background:linear-gradient(90deg,#4B8BFF,#0A59F7);border-radius:6px 0 0 6px}
+.bar .gap{width:12px;flex:0 0 12px;height:100%;background:#fff;
+  border-left:1px dashed #E5403A;border-right:1px dashed #E5403A}
+.bar .leak{height:100%;flex:1;background:repeating-linear-gradient(135deg,#FBDAD8 0 4px,#F6C3BF 4px 8px);
+  border-radius:0 6px 6px 0}
+.lk .amt{text-align:right}
+.lk .amt b{display:block;font-size:14.5px;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+.lk .amt span{font-size:9px;color:var(--ink3);line-height:1.5}
+
+.sum{display:flex;align-items:center;gap:16px;margin-top:15px;padding-top:13px;border-top:1px solid var(--line2);flex-wrap:wrap}
+.sum .lbl{font-size:11px;color:var(--ink2)}
+.sum .big{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+.sum .big u{font-size:10.5px;text-decoration:none;color:var(--ink3);font-weight:400;margin-left:3px}
+.sum .mid{font-size:10.5px;color:var(--ink3);line-height:1.55}
+.sum .mid b{color:var(--ink2);font-weight:500}
+.sum .price{margin-left:auto;text-align:right;font-size:10.5px;color:var(--ink2);line-height:1.55}
+.sum .price b{display:block;font-size:19px;color:var(--blue);font-weight:600}
+.sum .price em{font-style:normal;font-size:9.5px;color:var(--ink3)}
+
+.calcbar{display:flex;gap:7px;margin-top:11px;padding:8px 11px;background:#F7FAFD;border-radius:10px;
+  font-size:9.5px;color:var(--ink3);line-height:1.6;flex-wrap:wrap}
+.calcbar b{color:var(--ink2);font-weight:500}
+.calcbar .sep{color:#C9D6E4}
+
+/* S2 */
+.tlcap{display:none}
+.tl .axis{display:grid;grid-template-columns:120px 1fr;gap:12px;margin-bottom:5px}
+.tl .ticks{position:relative;height:14px;font-size:8.5px;color:var(--ink3)}
+.tl .ticks i{position:absolute;top:0;transform:translateX(-50%);font-style:normal}
+.tl .ticks:before{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:#E8EEF6}
+.track{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center;margin-bottom:8px}
+.track .who{font-size:10.5px;line-height:1.35}
+.track .who b{display:block;font-size:11px;font-weight:600}
+.track .who span{color:var(--ink3);font-size:9px}
+.track .who.now b{color:#B21D17}
+.track .who.new b{color:var(--blue)}
+.rail{position:relative;height:36px;background:#F7FAFD;border-radius:8px}
+.seg{position:absolute;top:5px;height:26px;border-radius:5px;display:flex;align-items:center;
+  padding:0 8px;font-size:9.5px;color:#fff;white-space:nowrap;overflow:hidden}
+.seg.gray{background:#D7DFEA;color:#5A6675}
+.seg.red{background:linear-gradient(90deg,#E86B62,#D93A34)}
+.seg.blue{background:linear-gradient(90deg,#4B8BFF,#0A59F7)}
+.seg.green{background:linear-gradient(90deg,#2BB673,#12A05C)}
+.seg.pale{background:#DFF3E7;color:#0A7A46}
+.seg.out{background:repeating-linear-gradient(135deg,#F2C6C2 0 4px,#EBB0AB 4px 8px);color:#8B2A25}
+.vline{display:flex;align-items:center;gap:14px;margin-top:13px;padding:10px 14px;
+  background:#F2FBF6;border:1px solid #DCEEE5;border-radius:12px;flex-wrap:wrap}
+.vline b{font-size:14px;color:#0A7A46;font-weight:600}
+.vline span{font-size:10.5px;color:var(--ink2);line-height:1.5}
+.vline span b{font-size:10.5px;color:var(--ink);font-weight:600}
+.vline .tag{margin-left:auto;font-size:9px;color:#0A7A46;background:#fff;border-radius:999px;
+  padding:3px 9px;box-shadow:0 0 0 .5px #cfe9dd}
+
+/* S3 */
+.ratio{margin-top:12px;padding-top:10px;border-top:1px solid var(--line2)}
+.rh2{display:flex;justify-content:space-between;font-size:9.5px;color:var(--ink3);margin-bottom:7px}
+.rh2 span{color:#AEBBC9}
+.rr{display:grid;grid-template-columns:44px 1fr 46px;align-items:center;gap:9px;margin-bottom:5px}
+.rl2{font-size:9.5px;color:var(--ink2)}
+.rb{position:relative;height:13px;background:#F1F5FA;border-radius:4px;display:flex;align-items:center}
+.rb i{display:block;height:100%;border-radius:3px}
+.rb .cost{width:9.2%;background:#BBD3F4;border-radius:4px 0 0 4px}
+.rb .gain{background:linear-gradient(90deg,#7FE3B4,#12A05C);margin-left:2px}
+.rr b{font-size:11.5px;font-weight:600;color:var(--green);text-align:right;font-variant-numeric:tabular-nums}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sc{border-radius:15px;padding:13px 15px 11px;background:#F7FAFD;border:1px solid #E9F0F9;
+  display:flex;flex-direction:column;cursor:pointer;transition:.22s}
+.sc.on{background:#fff;border-color:#CFE0FA;box-shadow:0 10px 26px rgba(10,89,247,.10)}
+.sch{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.sch b{font-size:12.5px;font-weight:600}
+.sch span{font-size:9px;color:var(--ink3)}
+.sch .pick{margin-left:auto;font-style:normal;font-size:8.5px;color:#fff;background:var(--blue);
+  border-radius:999px;padding:2px 7px;display:none}
+.sc.on .sch .pick{display:block}
+.scbig{font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-1px;margin:7px 0 1px}
+.scbig u{font-size:10.5px;text-decoration:none;color:var(--ink3);font-weight:400;margin-left:3px}
+.sc.on .scbig{color:var(--blue)}
+.scrows{margin-top:7px;border-top:1px solid #E8EFF8;padding-top:6px}
+.scrows div{display:flex;justify-content:space-between;gap:8px;font-size:9.5px;color:var(--ink2);padding:2.5px 0}
+.scrows sup{font-size:7.5px;color:#8FA6C4;margin-left:2px}
+.scrows b{font-variant-numeric:tabular-nums;font-weight:500;color:var(--ink)}
+.scfoot{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:baseline;
+  border-top:1px dashed #E2EAF4;font-size:9px;color:var(--ink3)}
+.scfoot b{font-size:11.5px;color:var(--green);font-weight:600}
+.srcbar{margin-top:12px;padding-top:10px;border-top:1px solid var(--line2);display:flex;flex-direction:column;gap:4px}
+.srcbar div{display:flex;gap:7px;font-size:9.5px;color:var(--ink3);line-height:1.5}
+.srcbar i{flex:0 0 auto;width:13px;height:13px;border-radius:50%;background:#EAF1FD;color:var(--blue);
+  font-style:normal;font-size:8px;font-weight:700;display:grid;place-items:center;margin-top:1px}
+.srcbar b{color:var(--ink2);font-weight:600}
+
+.quote{text-align:center;padding:16px 0 4px}
+.quote b{font-size:19px;font-weight:600;letter-spacing:-.3px}
+.quote span{display:block;font-size:10.5px;color:var(--ink3);margin-top:6px}
+
+@media(max-width:900px){
+  body{padding:16px 0 26px}
+  .page{padding:0 13px}
+  .head h1{font-size:22px}
+  .head .stamp{display:none}
+  .head .sub{font-size:11.5px}
+  .lk{grid-template-columns:1fr;gap:5px}
+  .lk .amt{text-align:left;display:flex;align-items:baseline;gap:7px}
+  .tl .axis,.track{grid-template-columns:70px 1fr;gap:8px}
+  .seg{font-size:0;padding:0;top:4px;height:14px;min-width:0}
+  .rail{height:22px}
+  .tlcap{display:block;font-size:9.5px;color:var(--ink3);line-height:1.5;margin:-1px 0 9px}
+  .scen{grid-template-columns:1fr;gap:9px}
+  .scbig{font-size:24px}
+  .quote b{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="unit.html">← 回判断台</a>
+  <div class="head">
+    <div class="top">
+      <h1>这笔账，我算三档</h1>
+      <div class="stamp">UT-ESS-03 · 惠州仲恺站 · 215kWh 液冷柜<br>算法与出处全在页内，可逐条核</div>
+    </div>
+    <div class="sub">这套东西不帮您省电。<b>它帮您把省下来的电，不被三次不该发生的动作吃掉。</b>三档都算好了，您只认一档。</div>
+  </div>
+
+  <!-- 01 -->
+  <section class="panel">
+    <div class="ph"><span class="no">01</span><h2>钱从哪漏</h2><span class="tail">三处漏口，都不是电费</span></div>
+    <p class="note">从左往右看：<b>应得</b> → 三处漏 → <b>实际到手</b>；再往右，<b>有判断后堵回一部分</b>。柱高 = 金额。</p>
+
+    <div id="waterfall"></div>
+
+    <div class="sum">
+      <div class="lbl">一年漏掉</div>
+      <div class="big">3.0<u>万元</u></div>
+      <div class="mid">其中 <b>2.1 万</b> 是本来可以不发生的<br>这三处都不靠模型，靠柜内规则</div>
+      <div class="price"><b>4,800 元 / 台 / 年</b><em>客户实付：订阅，不含硬件</em></div>
+    </div>
+
+    <div class="calcbar">
+      <span><b>算账口径</b></span><span class="sep">|</span>
+      <span>日收益 = 215kWh × 0.7 元峰谷差 × 0.9 可用率 ≈ <b>135 元 / 台 / 天</b></span><span class="sep">|</span>
+      <span>可避免比例 = 该笔钱里不必要动作的占比</span>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="panel">
+    <div class="ph"><span class="no">02</span><h2>同一件事，两条路径</h2><span class="tail">第 9 天压差越线 · 横轴 96 小时</span></div>
+    <p class="note">差别不在"能不能发现"，在<b>发现之后停多少台</b>。</p>
+
+    <div class="tl">
+      <div class="axis">
+        <div></div>
+        <div class="ticks">
+          <i style="left:0">0h</i><i style="left:25%">24h</i><i style="left:50%">48h</i>
+          <i style="left:75%">72h</i><i style="left:100%">96h</i>
+        </div>
+      </div>
+      <div class="track">
+        <div class="who now"><b>现在</b><span>人巡 + 出事再抢修</span></div>
+        <div class="rail">
+          <div class="seg gray" style="left:0;width:31.25%">异常在柜里长着，30h 没人知道</div>
+          <div class="seg red" style="left:31.25%;width:18.75%">停机 18h</div>
+          <div class="seg out" style="left:50%;width:50%">排查 48h · 全批 20 台停</div>
+        </div>
+      </div>
+      <div class="tlcap">现在：30 小时没人发现 → 停机 18 小时 → 排查 48 小时，全批 20 台停</div>
+      <div class="track">
+        <div class="who new"><b>有判断</b><span>柜内规则 + 同批比对</span></div>
+        <div class="rail">
+          <div class="seg blue" style="left:0;width:2.1%"></div>
+          <div class="seg green" style="left:2.1%;width:2.1%"></div>
+          <div class="seg blue" style="left:4.2%;width:2.1%"></div>
+          <div class="seg pale" style="left:6.25%;width:93.75%">判定 2h · 只停这 1 台 · 第 6 小时处理完，其余 19 台全程照常充放</div>
+        </div>
+      </div>
+      <div class="tlcap">有判断：2 小时判定 → 只停这 1 台 → 第 6 小时处理完，其余 19 台全程照常充放</div>
+    </div>
+
+    <div class="vline">
+      <b>少停 19 台 × 66 小时 ≈ 7,100 元</b>
+      <span>按上面口径，这一次就够抵 <b>1.5 年</b>订阅（7,100 / 4,800）。</span>
+      <span class="tag">举例，不是承诺</span>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="panel">
+    <div class="ph"><span class="no">03</span><h2>三档，每档都标出处</h2><span class="tail">点一档 = 就按这档谈</span></div>
+    <p class="note">数不从我们嘴里出，从这三个地方来：<b>①公开区间</b>　<b>②本站同批 20 台实测</b>　<b>③您的运维单</b>。哪档像您，就按哪档谈。</p>
+
+    <div class="scen" id="scen">
+      <div class="sc" data-k="low">
+        <div class="sch"><b>保守</b><span>只算全批停这一项</span><i class="pick">就按这档谈</i></div>
+        <div class="scbig">0.71<u>万元 / 年</u></div>
+        <div class="scrows">
+          <div><span>多停 19 台 × 66h<sup>②</sup></span><b>7,100</b></div>
+          <div><span>抢修与工期：保守起见不计<sup>③</sup></span><b>—</b></div>
+        </div>
+        <div class="scfoot"><span>订阅 4,800</span><b>覆盖成本 1.5 倍</b></div>
+      </div>
+
+      <div class="sc on" data-k="mid">
+        <div class="sch"><b>中性</b><span>三处都算，按均值</span><i class="pick">就按这档谈</i></div>
+        <div class="scbig">3.0<u>万元 / 年</u></div>
+        <div class="scrows">
+          <div><span>多停 19 台 × 66h<sup>②</sup></span><b>7,100</b></div>
+          <div><span>抢修 + 出车 2 趟<sup>③</sup></span><b>6,400</b></div>
+          <div><span>非标对接少等 10 天<sup>①</sup></span><b>16,000</b></div>
+        </div>
+        <div class="scfoot"><span>订阅 4,800</span><b>留下 6.1 倍</b></div>
+      </div>
+
+      <div class="sc" data-k="high">
+        <div class="sch"><b>乐观</b><span>含一次舱温异常提前处理</span><i class="pick">就按这档谈</i></div>
+        <div class="scbig">5.2<u>万元 / 年</u></div>
+        <div class="scrows">
+          <div><span>上面三项<sup>②③①</sup></span><b>29,500</b></div>
+          <div><span>舱温异常提前拦下 1 次<sup>②</sup></span><b>20,000</b></div>
+          <div><span>少跑一趟空车<sup>③</sup></span><b>2,000</b></div>
+        </div>
+        <div class="scfoot"><span>订阅 4,800</span><b>留下 10.7 倍</b></div>
+      </div>
+    </div>
+
+    <div class="ratio">
+      <div class="rh2">同一笔投入，留下多少<span>蓝 = 订阅 4,800　绿 = 留下　同一把尺子</span></div>
+      <div class="rr"><span class="rl2">保守</span><div class="rb"><i class="cost"></i><i class="gain" style="width:13.8%"></i></div><b>1.5×</b></div>
+      <div class="rr"><span class="rl2">中性</span><div class="rb"><i class="cost"></i><i class="gain" style="width:57.3%"></i></div><b>6.1×</b></div>
+      <div class="rr"><span class="rl2">乐观</span><div class="rb"><i class="cost"></i><i class="gain" style="width:100%"></i></div><b>10.7×</b></div>
+    </div>
+
+    <div class="srcbar">
+      <div><i>①</i><span><b>公开区间</b>：标准 Modbus 3 天；非标 IEC61850 / 私有协议 10–20 天（行业公开对接工期）</span></div>
+      <div><i>②</i><span><b>本站同批 20 台实测</b>：30 天内 1 台越线、19 台未跟；说明全批停是非必要动作，可只停 1 台</span></div>
+      <div><i>③</i><span><b>您的运维单</b>：出车、开舱、抢修、停机损失单价，换成您去年真实单据即可，公式不变</span></div>
+    </div>
+  </section>
+
+  <div class="quote">
+    <b>判断是货，省钱是找零。</b>
+    <span>账我们算好、出处标好；您只需要点头，或者换一档。</span>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('#scen .sc').forEach(function (el) {
+    el.addEventListener('click', function () {
+      document.querySelectorAll('#scen .sc').forEach(function (x) { x.classList.remove('on'); });
+      el.classList.add('on');
+    });
+  });
+  window.YT_ACCOUNT = {
+    pick: function (k) { document.querySelector('#scen .sc[data-k="' + k + '"]').click(); }
+  };
+})();
+</script>
+
+<script>
+(function () {
+  var D = [
+    { t: '应得', s: '一年一次没出事', v: 4.93, k: 'start' },
+    { t: '一台不对，全批停', s: '19 台 × 66h · 95% 可避免', v: -0.71, k: 'down' },
+    { t: '没人盯，白跑两趟', s: '出车 3,200 / 趟 · 50% 可避免', v: -0.64, k: 'down' },
+    { t: '杂牌柜，等对接', s: '10 天 × 1,600 · 70% 可避免', v: -1.60, k: 'down' },
+    { t: '实际到手', s: '这一年真拿到的', v: 1.98, k: 'mid' },
+    { t: '堵回来的', s: '可避免的那部分', v: 2.11, k: 'up' },
+    { t: '到手', s: '有判断之后', v: 4.09, k: 'end' }
+  ];
+  var MAX = 5.2, W = 1080, H = 250, TOP = 26, BOT = 206, BW = 66;
+  var Y = function (v) { return BOT - v / MAX * (BOT - TOP); };
+  var X = function (i) { return 26 + i * 148; };
+
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;display:block">';
+  [0, 1, 2, 3, 4, 5].forEach(function (g) {
+    svg += '<line x1="18" y1="' + Y(g) + '" x2="' + (W - 10) + '" y2="' + Y(g) + '" stroke="#F1F5FA"/>'
+      + '<text x="14" y="' + (Y(g) + 3) + '" font-size="7.5" fill="#B4C0CE" text-anchor="end">' + g + '</text>';
+  });
+
+  var level = 0;
+  for (var i = 0; i < D.length; i++) {
+    var d = D[i], x = X(i);
+    var from, to, col, txtcol;
+    if (d.k === 'start' || d.k === 'mid' || d.k === 'end') {
+      from = 0; to = d.v;
+      col = d.k === 'mid' ? '#F3B6B2' : (d.k === 'end' ? '#0A59F7' : '#BBD3F4');
+      txtcol = d.k === 'end' ? '#0A59F7' : '#5A6675';
+      level = d.v;
+    } else {
+      from = level; to = level + d.v;
+      col = d.k === 'down' ? '#E5403A' : '#12A05C';
+      txtcol = d.k === 'down' ? '#C0392B' : '#0A7A46';
+      level = to;
+    }
+    var y1 = Y(Math.max(from, to)), y2 = Y(Math.min(from, to));
+    svg += '<rect x="' + x + '" y="' + y1 + '" width="' + BW + '" height="' + Math.max(1.5, y2 - y1)
+      + '" fill="' + col + '" rx="3" opacity="' + (d.k === 'down' ? .88 : .95) + '"/>';
+    if (i < D.length - 1) {
+      svg += '<line x1="' + (x + BW) + '" y1="' + Y(to) + '" x2="' + X(i + 1) + '" y2="' + Y(to)
+        + '" stroke="#DCE5F1" stroke-dasharray="3 3"/>';
+    }
+    var sign = d.k === 'down' ? '\u2212' : (d.k === 'up' ? '+' : '');
+    svg += '<text x="' + (x + BW / 2) + '" y="' + (y1 - 7) + '" font-size="12" font-weight="600" fill="' + txtcol
+      + '" text-anchor="middle">' + sign + Math.abs(d.v).toFixed(2) + '\u4e07</text>';
+    svg += '<text x="' + (x + BW / 2) + '" y="' + (BOT + 16) + '" font-size="9.5" fill="#3D4A5C" text-anchor="middle">' + d.t + '</text>';
+    svg += '<text x="' + (x + BW / 2) + '" y="' + (BOT + 29) + '" font-size="8" fill="#A5B2C2" text-anchor="middle">' + d.s + '</text>';
+  }
+  svg += '</svg>';
+  document.getElementById('waterfall').innerHTML = svg;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>储能柜运行判断</title>
+<style>
+:root{
+  --blue:#0A59F7; --blue2:#4B8BFF; --green:#12A05C; --orange:#E8890C;
+  --red:#E5403A; --ink:#0F1724; --ink2:#5A6675; --ink3:#8A96A6;
+  --line:#E4E9F0; --line2:#EFF3F8; --bg:#EDF1F7;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;min-width:320px;height:100vh;overflow:hidden;color:var(--ink);
+  background:
+    radial-gradient(1100px 460px at 12% -12%,#DCE8FF 0,transparent 62%),
+    radial-gradient(900px 420px at 92% -8%,#EADCFC 0,transparent 60%),
+    var(--bg);
+  display:flex;flex-direction:column;font-size:13px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:transparent}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;gap:12px;padding:0 20px;height:62px;flex:0 0 auto}
+.logo{width:30px;height:30px;border-radius:9px;flex:0 0 auto;
+  background:linear-gradient(150deg,#5B9BFF,#0A59F7 70%);
+  box-shadow:0 4px 12px #0a59f740;display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:13px;letter-spacing:-.5px}
+.title b{display:block;font-size:15px;font-weight:600;letter-spacing:.2px}
+.title small{display:block;color:var(--ink3);font-size:11px;margin-top:1px}
+.seg{display:inline-flex;background:rgba(120,132,152,.11);border-radius:11px;padding:3px;gap:2px;margin-left:auto}
+.seg button{background:transparent;border-radius:9px;padding:6px 13px;font-size:12px;color:var(--ink2);white-space:nowrap}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;
+  box-shadow:0 1px 3px rgba(16,24,40,.12),0 0 0 .5px rgba(16,24,40,.05)}
+/* 顶部四指标带 */
+.kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:10px;
+  padding:0 20px 8px;flex:0 0 auto;align-items:stretch}
+.k{background:rgba(255,255,255,.84);border-radius:11px;padding:7px 12px;
+  box-shadow:0 0 0 1px rgba(150,170,200,.15) inset,0 3px 10px rgba(16,40,80,.045);
+  display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.k b{font-size:19px;font-weight:600;letter-spacing:-.7px;line-height:1.1;font-variant-numeric:tabular-nums}
+.k small{font-size:9.5px;color:var(--ink3);margin-top:2px;letter-spacing:.2px}
+.k:after{content:'';position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:#C9D6E6}
+.k.b:after{background:var(--blue)} .k.g:after{background:var(--green)}
+.k.o:after{background:var(--orange)} .k.v:after{background:#7A5AF8}
+.demo{align-self:center;font-size:9.5px;font-weight:600;color:#8A5A00;background:#FDF3DE;
+  border-radius:6px;padding:5px 9px;letter-spacing:.3px;white-space:nowrap;
+  box-shadow:0 0 0 1px #F0DFB6 inset}
+
+.live{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;
+  font-size:12px;font-weight:600;white-space:nowrap;margin-left:10px}
+.live:before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
+.live.ok{background:#E4F7EC;color:#0A7A46}
+.live.warn{background:#FEF2DF;color:#96600A}
+.live.bad{background:#FDE9E8;color:#B21D17}
+.live.gap{background:#E8EFFA;color:#2A5CA6}
+.clock{text-align:right;margin-left:14px;min-width:66px}
+.clock span{display:block;color:var(--ink3);font-size:10.5px}
+.clock b{display:block;font-size:16px;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.tools{display:flex;gap:6px;margin-left:12px}
+.tools button{background:#fff;border-radius:10px;padding:7px 12px;font-size:12px;color:var(--ink2);
+  box-shadow:0 1px 2px rgba(16,24,40,.06),0 0 0 .5px rgba(16,24,40,.06)}
+.tools button:hover{color:var(--blue);box-shadow:0 2px 8px rgba(10,89,247,.16)}
+.tools button.on{background:var(--blue);color:#fff}
+
+.app{max-width:1980px;margin:0 auto;padding:0 20px 14px;width:100%;flex:1;min-height:0;display:flex}
+.grid{display:grid;grid-template-columns:306px minmax(0,1fr) 386px;gap:12px;flex:1;min-height:0;width:100%}
+.panel{background:rgba(255,255,255,.88);border-radius:20px;padding:15px;
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 30px rgba(16,40,80,.07);
+  backdrop-filter:blur(20px) saturate(1.7);-webkit-backdrop-filter:blur(20px) saturate(1.7);
+  min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ph{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--ink3);
+  margin-bottom:10px;flex:0 0 auto;letter-spacing:.5px}
+.ph b{color:var(--ink);font-size:12px;font-weight:600;letter-spacing:0}
+.pill{font-size:10px;color:var(--blue);background:#EDF3FF;border-radius:999px;padding:3px 9px;font-weight:500}
+
+/* 左栏 */
+.donutrow{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex:0 0 auto}
+.donut{width:96px;height:96px;border-radius:50%;flex:0 0 auto;
+  background:conic-gradient(#0A59F7 0 var(--p),#E8EEF7 var(--p));display:grid;place-items:center;
+  box-shadow:0 8px 20px rgba(10,89,247,.16)}
+.donut>div{width:74px;height:74px;border-radius:50%;background:#fff;
+  display:flex;flex-direction:column;justify-content:center;align-items:center}
+.donut b{font-size:24px;font-variant-numeric:tabular-nums;line-height:1.05;font-weight:600}
+.donut small{color:var(--ink3);font-size:9.5px;margin-top:1px}
+.donutside{flex:1;font-size:11px;line-height:2.0;color:var(--ink2);min-width:0}
+.donutside .r{display:flex;justify-content:space-between;gap:6px}
+.donutside .r b{color:var(--ink);font-weight:500;font-size:11px;white-space:nowrap}
+
+.pts{display:flex;flex-direction:column;flex:0 0 auto;border-top:1px solid var(--line2);padding-top:3px}
+.ptrow{display:grid;grid-template-columns:1fr auto 52px;gap:9px;align-items:center;
+  padding:8px 2px;border-bottom:1px solid var(--line2)}
+.ptrow:last-child{border-bottom:0}
+.ptrow .n{display:flex;align-items:center;gap:8px;color:var(--ink2);font-size:12px;white-space:nowrap}
+.ptrow .n em{width:6px;height:6px;border-radius:50%;background:#C7D3E2;flex:0 0 auto}
+.ptrow.w .n em{background:var(--orange)} .ptrow.b .n em{background:var(--red)} .ptrow.g .n em{background:#D5DEEA}
+.ptrow .v{font-size:13.5px;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right;
+  font-weight:600;white-space:nowrap}
+.ptrow .v u{color:var(--ink3);font-size:9.5px;text-decoration:none;margin-left:2px;font-weight:400}
+.ptrow.w .v{color:var(--orange)} .ptrow.b .v{color:var(--red)} .ptrow.g .v{color:var(--ink3)}
+.sp{width:52px;height:15px} .sp path{stroke:#AEC4DC;stroke-width:1.2;fill:none}
+.ptrow.w .sp path{stroke:var(--orange)} .ptrow.b .sp path{stroke:var(--red)}
+
+.base{margin-top:9px;padding:9px 11px;background:#F5F8FC;border-radius:12px;flex:0 0 auto;
+  font-size:10.5px;color:var(--ink2);line-height:1.9}
+.base .r{display:flex;justify-content:space-between}
+.base .r b{color:var(--ink);font-weight:500}
+.base .h{color:var(--ink3);font-size:9.5px;letter-spacing:.5px;margin-bottom:2px}
+
+.chain{margin-top:10px;flex:0 0 auto}
+.chain .h{color:var(--ink3);font-size:9.5px;letter-spacing:.5px;margin-bottom:6px}
+.cw{display:flex;justify-content:space-between;gap:6px;font-size:10.5px;color:var(--ink2);
+  background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 9px}
+.cw b{color:var(--ink);font-weight:500;white-space:nowrap;font-size:10px}
+.ca{font-size:9px;color:#9AA6B6;text-align:center;padding:2px 0}
+.month{margin-top:auto;padding-top:11px;flex:0 0 auto}
+.month .h{color:var(--ink3);font-size:9.5px;letter-spacing:.5px;margin-bottom:7px}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.mc{background:#F5F8FC;border-radius:12px;padding:7px 5px;text-align:center}
+.mc b{display:block;font-size:17px;font-variant-numeric:tabular-nums;line-height:1.2;font-weight:600}
+.mc small{display:block;font-size:9px;color:var(--ink3);margin-top:1px}
+.mc.al b{color:var(--red)} .mc.tr b{color:var(--orange)} .mc.rp b{color:var(--green)} .mc.gp b{color:#6E86A6}
+
+/* 中栏场景 */
+.stage{padding:0}
+.stage .ph{position:absolute;left:15px;right:15px;top:13px;z-index:6;margin:0}
+.scene{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:20px;
+  background:radial-gradient(ellipse 72% 62% at 50% 40%,#FCFEFF 0,#E6EEF8 74%)}
+.floor{position:absolute;left:-16%;right:-16%;bottom:-8%;height:56%;
+  background-image:linear-gradient(#CBD8E8 1px,transparent 1px),linear-gradient(90deg,#CBD8E8 1px,transparent 1px);
+  background-size:42px 42px;transform:perspective(520px) rotateX(64deg);transform-origin:bottom center;
+  opacity:.55;mask-image:linear-gradient(to top,#000 10%,transparent 80%);
+  -webkit-mask-image:linear-gradient(to top,#000 10%,transparent 80%)}
+.scene svg.cab{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
+  width:100%;max-width:872px;height:auto;filter:drop-shadow(0 20px 38px rgba(30,60,110,.20))}
+.scanline{position:absolute;left:12%;right:12%;height:2px;z-index:4;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#0A59F766,transparent);
+  animation:scan 3.6s linear infinite}
+@keyframes scan{0%{top:14%;opacity:0}12%{opacity:.9}85%{opacity:.9}100%{top:76%;opacity:0}}
+.tag{position:absolute;z-index:6;border-radius:11px;padding:6px 11px 6px 12px;
+  background:rgba(255,255,255,.95);border:1px solid var(--line);
+  box-shadow:0 6px 20px rgba(20,45,90,.12);transition:.35s;
+  border-left:3px solid var(--green)}
+.tag b{display:block;font-size:12px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tag small{display:block;font-size:9.5px;color:var(--ink3);margin-top:2px;white-space:nowrap}
+.tag.bad{border-left-color:var(--red);background:#FFFAFA}
+.tag.bad b{color:#B21D17;animation:pul 1.9s ease-in-out infinite}
+.tag.warn{border-left-color:var(--orange);background:#FFFCF6}
+.tag.warn b{color:#96600A}
+.tag.ok b{color:var(--ink)}
+@keyframes pul{0%,100%{opacity:1}50%{opacity:.55}}
+
+.livespot{position:absolute;left:14px;bottom:13px;display:flex;align-items:center;gap:7px;z-index:7;
+  font-size:10.5px;color:var(--ink2);background:rgba(255,255,255,.9);border-radius:999px;padding:6px 12px;
+  box-shadow:0 4px 14px rgba(20,45,90,.10);backdrop-filter:blur(10px)}
+.livespot i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px #12a05c;
+  animation:blk 1.7s infinite}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* 六步 */
+.trace{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;padding:0 13px 11px;flex:0 0 auto}
+.ts{background:#F5F8FC;border:1px solid var(--line);border-radius:12px;padding:8px 9px;
+  opacity:.5;transition:.3s;position:relative;overflow:hidden;min-width:0;background:#F8FAFD}
+.ts.done{opacity:.94;background:#fff}
+.ts.cur{opacity:1;background:#fff;border-color:var(--blue);box-shadow:0 6px 18px rgba(10,89,247,.15)}
+.ts.cur:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+.ts.warn.cur{border-color:var(--orange);box-shadow:0 6px 18px rgba(232,137,12,.18)}
+.ts.warn.cur:before{background:var(--orange)}
+.ts.bad.cur{border-color:var(--red);box-shadow:0 6px 18px rgba(229,64,58,.18)}
+.ts.bad.cur:before{background:var(--red)}
+.ts .k{display:flex;align-items:baseline;gap:5px}
+.ts .k i{font-style:normal;font-size:9px;color:#AEBACB;font-variant-numeric:tabular-nums}
+.ts .k b{font-size:11.5px;font-weight:600;white-space:nowrap}
+.ts .tv{display:block;margin-top:4px;font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.ts.warn .tv{color:var(--orange)} .ts.bad .tv{color:var(--red)}
+.ts .nt{display:block;font-size:9px;color:var(--ink3);margin-top:3px;line-height:1.45;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+.dchart{padding:0 13px 13px;flex:0 0 auto}
+.dchart .dh{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:6px}
+.dcols{display:flex;gap:2px;height:44px;align-items:stretch;position:relative}
+.dcols:before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:#DCE5F1}
+.dcol{flex:1;position:relative}
+.dcol i{position:absolute;left:0;right:0;display:block;border-radius:3px;background:#9DC1F2}
+.dcol.c i{bottom:50%} .dcol.d i{top:50%;background:#F3C078} .dcol.n i{display:none}
+.dcol.cur i{background:var(--blue);box-shadow:0 0 9px #0a59f766}
+.dcol.d.cur i{background:var(--orange);box-shadow:0 0 9px #e8890c66}
+.dx{display:flex;justify-content:space-between;font-size:8.5px;color:#A6B4C6;margin-top:2px}
+
+/* 右栏 解说台 */
+.booth{flex:0 0 auto}
+.bh{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.bh .av{width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(150deg,#5B9BFF,#0A59F7);color:#fff;display:grid;place-items:center;
+  font-size:10px;font-weight:700;box-shadow:0 3px 10px #0a59f733}
+.bh b{font-size:12px;font-weight:600}
+.bh span{margin-left:auto;font-size:9.5px;color:var(--ink3)}
+
+.verdict{border-radius:14px;padding:12px 14px;background:#F6F9FE;border:1px solid #E7EEF9}
+.verdict .vt{display:flex;align-items:baseline;gap:9px}
+.verdict .vt b{font-size:19px;font-weight:600}
+.verdict .vt i{font-style:normal;font-size:9px;padding:2px 7px;border-radius:999px;
+  background:#fff;color:var(--ink3);box-shadow:0 0 0 .5px rgba(16,24,40,.08)}
+.verdict p{font-size:11.5px;color:var(--ink2);line-height:1.7;margin:6px 0 0}
+.verdict p b{color:var(--ink);font-weight:600}
+.verdict.ok{background:#F2FBF6;border-color:#DCEEE5} .verdict.ok .vt b{color:#0A7A46}
+.verdict.ok .vt i{color:#0A7A46}
+.verdict.warn{background:#FFFBF3;border-color:#F6E9D2} .verdict.warn .vt b{color:#96600A}
+.verdict.warn .vt i{color:#96600A}
+.verdict.bad{background:#FFF5F5;border-color:#F7DEDC} .verdict.bad .vt b{color:#B21D17}
+.verdict.bad .vt i{color:#B21D17}
+.verdict.gap{background:#F3F7FD;border-color:#DFE8F5} .verdict.gap .vt b{color:#2A5CA6}
+.verdict.gap .vt i{color:#2A5CA6}
+
+.sec{margin-top:12px}
+.sh{font-size:10px;color:var(--ink3);letter-spacing:.5px;margin-bottom:6px;display:flex;justify-content:space-between}
+.sh b{color:var(--ink2);font-weight:500;letter-spacing:0}
+.ev{font-size:11px;color:var(--ink2);line-height:1.65;padding:5px 0 5px 14px;position:relative}
+.ev:before{content:'';position:absolute;left:2px;top:11px;width:4px;height:4px;border-radius:50%;background:#B9C9DC}
+.ev b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+
+.acts{display:flex;gap:8px;margin-top:13px}
+.acts button{flex:1;font-size:11.5px;padding:10px 4px;border-radius:11px;font-weight:500}
+.acts .go{background:var(--blue);color:#fff;box-shadow:0 6px 16px rgba(10,89,247,.28)}
+.acts .go:hover{background:#0346D0}
+.acts .hold{background:#F1F4F9;color:var(--ink2)}
+.acts .hold:hover{background:#E8EDF5}
+.acts .no{background:transparent;color:var(--blue);box-shadow:inset 0 0 0 1px #DCE6F6}
+.owner{font-size:9.5px;color:var(--ink3);margin-top:10px;display:flex;justify-content:space-between}
+.owner b{color:var(--ink2);font-weight:500}
+
+/* 深色消息卡：浅色界面里的一块反差 */
+.note{background:linear-gradient(160deg,#1B2432,#111823);color:#E9EEF6;border-radius:15px;
+  padding:12px 14px;margin-top:11px;flex:0 0 auto;box-shadow:0 12px 26px rgba(15,23,36,.22)}
+.note .nh{display:flex;justify-content:space-between;font-size:9px;color:#8B9AAD;letter-spacing:.6px;
+  padding-bottom:7px;border-bottom:1px solid #2A3546;margin-bottom:8px}
+.note p{font-size:11px;line-height:1.72;margin:0 0 5px;color:#CBD5E3}
+.note p:last-of-type{margin-bottom:0}
+.note p b{color:#fff;font-weight:600}
+.note .num{color:#fff;font-weight:600;font-variant-numeric:tabular-nums}
+.note .src{font-size:8.5px;color:#7D8CA0;margin-top:8px;padding-top:7px;border-top:1px solid #2A3546}
+
+.feedwrap{margin-top:11px;flex:1;min-height:0;display:flex;flex-direction:column}
+.fh{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:6px;flex:0 0 auto}
+.feed{overflow:auto;flex:1;min-height:0;padding-right:4px}
+.feed::-webkit-scrollbar{width:4px}
+.feed::-webkit-scrollbar-thumb{background:#D3DEEB;border-radius:4px}
+.alarm{display:flex;gap:9px;padding:8px 10px;background:#F7F9FC;border-radius:11px;
+  align-items:flex-start;margin-bottom:6px;border-left:3px solid #C9D6E6}
+.alarm .ac{font-size:11px;flex:0 0 auto;line-height:1.35;color:var(--ink3)}
+.alarm .ab{min-width:0}
+.alarm .ab b{font-size:11px;display:block;font-weight:600;line-height:1.45}
+.alarm .ab small{font-size:9.5px;color:var(--ink3);display:block;margin-top:2px}
+.alarm time{margin-left:auto;color:#9AA7B8;font-size:9px;white-space:nowrap;flex:0 0 auto}
+.alarm.alert{border-left-color:var(--red)} .alarm.alert .ac{color:var(--red)}
+.alarm.trend{border-left-color:var(--orange)} .alarm.trend .ac{color:var(--orange)}
+.alarm.gap{border-left-color:#7E9DBF} .alarm.gap .ac{color:#5B7EA6}
+.alarm.suspect{border-left-color:#A9BACC} .alarm.suspect .ac{color:#6E86A6}
+.alarm.recover{border-left-color:var(--green)} .alarm.recover .ac{color:var(--green)}
+
+details.money,details.io{margin-top:9px;padding-top:9px;border-top:1px solid var(--line2);flex:0 0 auto}
+summary{list-style:none;cursor:pointer;font-size:10.5px;color:var(--ink2);
+  display:flex;justify-content:space-between;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary b{color:var(--green);font-weight:600;font-variant-numeric:tabular-nums}
+summary:after{content:'▾';color:#A6B4C6}
+details[open] summary:after{content:'▴'}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin:10px 0}
+.cg label{display:flex;justify-content:space-between;gap:5px;font-size:9.5px;color:var(--ink3)}
+.cg input{width:48px;background:transparent;border:0;border-bottom:1px solid #DCE5F1;
+  color:var(--ink);font-size:11px;padding:2px;text-align:right;font-variant-numeric:tabular-nums}
+.cg input:focus{outline:none;border-bottom-color:var(--blue)}
+.res{font-size:10.5px;color:var(--ink2);line-height:1.95;max-height:180px;overflow:auto}
+.res .hd{font-size:9px;letter-spacing:.5px;color:var(--ink3);margin:7px 0 2px;padding-top:5px;
+  border-top:1px dashed #E4EAF2}
+.res .hd:first-child{border-top:0;margin-top:0}
+.res .ln{display:flex;justify-content:space-between;gap:8px}
+.res .ln b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:500}
+.res .ln b.g{color:var(--green)}
+.io .row{display:flex;gap:6px;margin-top:7px;align-items:center}
+.io input[type=text]{flex:1;min-width:0;background:#F5F8FC;border:1px solid var(--line);
+  color:var(--ink);font-size:10.5px;padding:7px;border-radius:9px}
+.io input[type=text]:focus{outline:none;border-color:#BBD2F5;background:#fff}
+.io button{font-size:10px;padding:7px 11px;border-radius:9px;background:#EDF3FF;color:var(--blue)}
+.io .hint{font-size:9.5px;color:var(--ink3);margin-top:6px;line-height:1.6}
+
+.strip{display:flex;align-items:center;gap:12px;padding:10px 22px;flex:0 0 auto}
+.strip .lb{font-size:9.5px;letter-spacing:1.5px;color:var(--ink3);white-space:nowrap}
+.days{display:flex;gap:3px;flex:1}
+.tlc{flex:1;height:5px;border-radius:3px;background:#DCE4EF;cursor:pointer;transition:.2s}
+.tlc:hover{background:#BFCEE0} .tlc.has{background:#F0BC77}
+.tlc.hasa{background:#E88A85} .tlc.cur{background:var(--blue)}
+.strip .rt{font-size:9px;color:var(--ink3);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+@media(max-width:1240px){
+  body{height:auto;overflow:auto}
+  .app{display:block}
+  .grid{grid-template-columns:1fr 1fr;height:auto}
+  .grid>.panel{min-height:460px;overflow:visible}
+  .grid>.stage{grid-column:1/-1;min-height:560px}
+.trace{grid-template-columns:repeat(3,1fr)}
+  .seg,.tools{display:none}
+}
+@media(max-width:680px){
+  .top{height:auto;flex-wrap:wrap;padding:10px 14px;gap:9px 10px}
+  .title{flex:1;min-width:0} .title small{display:none}
+  .clock{order:1;margin-left:auto;min-width:0}
+  .live{display:none}
+  .seg{order:3;margin-left:0;flex:1;justify-content:space-between}
+  .tools{order:4;margin-left:0;flex:1}
+  .tools button{flex:1}
+  .grid{display:flex;flex-direction:column}
+  .grid>.panel{min-height:auto;margin-bottom:10px;overflow:visible}
+  .grid>.panel:nth-child(3){order:1}
+  .grid>.panel:nth-child(2){order:2}
+  .grid>.panel:nth-child(1){order:3}
+  .grid>.stage{min-height:400px} .stage .scene{min-height:330px}
+.trace{grid-template-columns:repeat(3,1fr)}
+  .app{padding:0 12px 12px} .strip{padding:9px 14px} .strip .lb{display:none}
+  .kpi{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="logo">宇</span>
+  <div class="title"><b>储能柜运行判断</b><small>UT-ESS-03 · 惠州仲恺 3 号柜 · 215kWh 液冷</small></div>
+  <div class="seg">
+    <button class="on">这台柜</button>
+    <button onclick="location.href='batch.html'">同批 20 台</button>
+    <button onclick="location.href='batch.html'" title="这站目前只有这一批 20 台">这个站</button>
+    <button onclick="location.href='account.html'">这笔账</button>
+    <button onclick="location.href='charts.html'">数据</button>
+  </div>
+  <span class="live ok" id="statePill">正常</span>
+  <div class="tools">
+    <button id="btnPlay">▶ 播放</button>
+    <button id="btnStep">单步</button>
+    <button id="spd">1×</button>
+  </div>
+  <div class="clock"><span id="cDay">第 1 天</span><b id="cTime">08:00</b></div>
+</header>
+
+<div class="kpi">
+  <div class="k b"><b>8</b><small>接入信号点 · Modbus + DI</small></div>
+  <div class="k g"><b id="kState">正常</b><small>当前判定 · 六条规则</small></div>
+  <div class="k o"><b>3</b><small>30 天需关注 · 均已闭环</small></div>
+  <div class="k v"><b>99.7<span style="font-size:13px">%</span></b><small>数据完整度 · 720 点</small></div>
+  <span class="demo">合成数据 · 演示环境</span>
+</div>
+
+<main class="app">
+  <div class="grid">
+
+    <section class="panel">
+      <div class="ph"><b>八路信号</b><span class="pill">只读</span></div>
+      <div class="donutrow">
+        <div class="donut" id="donut" style="--p:71%"><div><b id="dSoc">71</b><small id="dSocTag">电量 %</small></div></div>
+        <div class="donutside">
+          <div class="r"><span>投运</span><b>2024-06</b></div>
+          <div class="r"><span>采集</span><b>Modbus + DI</b></div>
+          <div class="r"><span>接入</span><b>只读旁路</b></div>
+        </div>
+      </div>
+      <div class="pts" id="ptList"></div>
+      <div class="base" id="baseInfo"></div>
+      <div class="chain">
+        <div class="h">信号怎么进来的</div>
+        <div class="cw"><span>BMS · PCS · 液冷 · 消防</span><b>485 / 干接点</b></div>
+        <div class="ca">↓</div>
+        <div class="cw"><span>柜内判断盒（宇泰）</span><b>不进云</b></div>
+        <div class="ca">↓ 只发结论</div>
+        <div class="cw"><span>平台台账</span><b>谁判谁签</b></div>
+      </div>
+      <div class="month">
+        <div class="h">这一个月它身上发生过什么</div>
+        <div class="mgrid" id="monthGrid"></div>
+      </div>
+    </section>
+
+    <section class="panel stage">
+      <div class="ph"><b>柜内正在发生什么</b><span class="pill">判断在柜内 · 不上云</span></div>
+      <div class="scene" id="scene">
+        <div class="floor"></div>
+        <div class="scanline"></div>
+        <svg class="cab" viewBox="0 0 760 470" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF4FC"/>
+            </linearGradient>
+            <linearGradient id="topf" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F4F9FF"/><stop offset="1" stop-color="#E2EDFA"/>
+            </linearGradient>
+            <g id="cellrow">
+              <rect x="0" y="0" width="308" height="52" rx="5" fill="#F6FAFF" stroke="#8FB2D3" stroke-width="1.2"/>
+              <g fill="#DCEBFA" stroke="#93B4D4" stroke-width=".9">
+                <rect x="29" y="6" width="26" height="40" rx="3"/><rect x="61" y="6" width="26" height="40" rx="3"/>
+                <rect x="93" y="6" width="26" height="40" rx="3"/><rect x="125" y="6" width="26" height="40" rx="3"/>
+                <rect x="157" y="6" width="26" height="40" rx="3"/><rect x="189" y="6" width="26" height="40" rx="3"/>
+                <rect x="221" y="6" width="26" height="40" rx="3"/><rect x="253" y="6" width="26" height="40" rx="3"/>
+              </g>
+            </g>
+          </defs>
+          <polygon points="180,150 300,86 640,86 520,150" fill="url(#topf)" stroke="#7FA6CC" stroke-width="1.5"/>
+          <polygon points="520,150 640,86 640,352 520,424" fill="#E8F0FA" stroke="#7FA6CC" stroke-width="1.5"/>
+          <rect x="180" y="150" width="340" height="274" fill="url(#face)" stroke="#6E9AC6" stroke-width="1.6"/>
+          <line x1="181" y1="151" x2="519" y2="151" stroke="#0A59F7" stroke-width="1.2" opacity=".28"/>
+          <use href="#cellrow" x="196" y="162"/>
+          <use href="#cellrow" x="196" y="224"/>
+          <use href="#cellrow" x="196" y="286"/>
+          <use href="#cellrow" x="196" y="348"/>
+          <rect x="534" y="172" width="84" height="122" rx="6" fill="#EFF6FE" stroke="#7FA6CC" stroke-width="1.3"/>
+          <text x="576" y="201" font-size="9" fill="#7C9ABB" text-anchor="middle">PCS</text>
+          <rect x="544" y="210" width="64" height="30" rx="4" fill="#E7F0FB" stroke="#B7CDE6"/>
+          <rect x="544" y="248" width="64" height="30" rx="4" fill="#E7F0FB" stroke="#B7CDE6"/>
+          <g stroke="#7FA8D4" stroke-width="2.2" fill="none" opacity=".95">
+            <path d="M312,100 L612,100"/><path d="M312,112 L612,112"/>
+            <path d="M334,100 L334,150"/><path d="M588,100 L588,150"/>
+          </g>
+          <text x="470" y="80" font-size="9" fill="#7C9ABB" text-anchor="middle">液冷机组</text>
+          <g opacity=".9">
+            <circle cx="248" cy="122" r="3.2" fill="#F0A2A0"/><circle cx="334" cy="122" r="3.2" fill="#F0A2A0"/>
+            <circle cx="420" cy="122" r="3.2" fill="#F0A2A0"/>
+          </g>
+          <polygon points="180,424 520,424 640,352 640,366 520,438 180,438" fill="#D6E4F4" stroke="#7FA6CC"/>
+        </svg>
+
+        <div class="tag ok" id="tagA" style="left:15%;top:23%"><b id="tagA_v">舱温 25.4℃</b><small id="tagA_s">液冷温差 3.3℃</small></div>
+        <div class="tag ok" id="tagB" style="left:34%;top:70%"><b id="tagB_v">压差 30mV</b><small id="tagB_s">平常 30mV</small></div>
+        <div class="tag ok" id="tagC" style="right:8%;top:29%"><b id="tagC_v">PCS +0.00C</b><small id="tagC_s">静置</small></div>
+        <div class="livespot"><i></i><span id="obsText">小宇正在观察 · 八路信号 8/8 · 全部为合成数据</span></div>
+      </div>
+      <div class="trace" id="trace"></div>
+      <div class="dchart">
+        <div class="dh"><span>这一天的充放</span><span>上=充 下=放 · 小时</span></div>
+        <div class="dcols" id="dcols"></div>
+
+
+        <div class="dx"><span>0</span><span>6</span><span>12</span><span>18</span><span>23</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="booth">
+        <div class="bh"><span class="av">宇</span><b>小宇解说台</b><span id="boothTime">第 1 天 08:00</span></div>
+        <div class="verdict ok" id="verdict">
+          <div class="vt"><b id="vdTitle">没看出异常</b><i id="vdTag">正常</i></div>
+          <p id="vdText">八路信号都在它自己的老范围里。</p>
+        </div>
+        <div class="sec" id="secEv">
+          <div class="sh">证据链<span><b id="evCnt">4 条</b></span></div>
+          <div id="evList"></div>
+        </div>
+        <div class="acts">
+          <button class="go" id="actGo">执行联动</button>
+          <button class="hold" id="actHold">暂不处理</button>
+          <button class="no" id="actNo">让小宇继续盯</button>
+        </div>
+        <div class="owner"><span>处置者 <b>小宇 · 柜内规则</b></span><span id="ownerAt">人审后发</span></div>
+      </div>
+
+      <div class="note" id="msgBox"></div>
+
+      <div class="feedwrap">
+        <div class="fh"><span>这一柜查到的事</span><span id="feedCnt">0 条</span></div>
+        <div class="feed" id="events"></div>
+      </div>
+
+      <details class="money">
+        <summary><span>这笔账 · 一台一年毛利</span><b id="sumMoney">3,500 元</b></summary>
+        <div class="cg">
+          <label>订阅 / 台 / 年<input type="number" id="pSub" value="4800"></label>
+          <label>盒成本<input type="number" id="pHw" value="3500"></label>
+          <label>安装<input type="number" id="pInst" value="800"></label>
+          <label>年运维<input type="number" id="pOps" value="600"></label>
+          <label>单次故障代价<input type="number" id="cLoss" value="12000"></label>
+          <label>改造前 / 年<input type="number" id="cBefore" value="2"></label>
+          <label>改造后 / 年<input type="number" id="cAfter" value="1"></label>
+          <label>巡检 / 次 / 年<input type="number" id="cN" value="12"></label>
+          <label>单次巡检<input type="number" id="cCn" value="300"></label>
+        </div>
+        <div class="res" id="calcOut"></div>
+      </details>
+      <details class="io">
+        <summary>接入 · 换成自己的数据和模型</summary>
+        <div class="row"><span>数据</span><input type="file" id="csvFile" accept=".csv" style="flex:1;color:#8A96A6;font-size:9.5px"></div>
+        <div class="hint" id="csvState">按同一格式导出，选文件即重算，代码不动。</div>
+        <div class="row"><input type="text" id="cfgBase" placeholder="模型地址 http://…/v1"></div>
+        <div class="row"><input type="text" id="cfgModel" placeholder="模型名 deepseek"><button id="cfgSave">保存</button></div>
+        <div class="hint" id="cfgState">未配置 → 用规则模板出话</div>
+        <table id="mapTable" style="width:100%;margin-top:7px;font-size:9px;color:#8A96A6;line-height:1.9"></table>
+        <div class="hint" style="margin-top:9px"><a href="dsh.html" style="color:#0A59F7;font-weight:600">这套判断是怎么出来的 · 谁在判、谁在说 →</a></div>
+      </details>
+      <div style="display:none"><button id="btnReset"></button><button id="tabTpl"></button><button id="tabModel"></button><span id="stripInfo"></span><span id="msgDay"></span><span id="msgSrc"></span></div>
+    </section>
+  </div>
+</main>
+
+<footer class="strip">
+  <div class="lb">30 天</div>
+  <div class="days" id="timeline"></div>
+  <div class="rt" id="stripRt">已判 0 条</div>
+</footer>
+
+<script>
+/* ============================================================
+   UT-ESS-03 · 储能柜 30 天运行判断（模拟）
+   DSH 侧：接 → 存 → 判 → 门 → 记
+   DeepSeek 侧：只把"判好的事实"说成人话
+   换真实数据：替换 buildSeries()，或走 YT_PILOT.loadRows() / 载入 CSV。
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var DAYS = 30, TOTAL = DAYS * 24;
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var RND = mulberry32(20261201);
+  function nz(a) { return (RND() * 2 - 1) * a; }
+
+  function buildSeries() {
+    var rows = [], soc = 72;
+    for (var i = 0; i < TOTAL; i++) {
+      var day = Math.floor(i / 24) + 1, h = i % 24, cur = 0;
+      if (h >= 9 && h <= 15) cur = 0.46 * Math.sin(Math.PI * ((h - 9) / 6));
+      else if (h >= 18 && h <= 22) cur = -0.38 * Math.sin(Math.PI * ((h - 18) / 4));
+      if (day === 27 && h >= 12 && h <= 14) cur += (h === 14 ? 0.16 : 0.06);
+      soc += cur * 31 + nz(0.5);
+      soc = Math.max(16, Math.min(96, soc));
+
+      var gapInj = 0;
+      if (day === 8 && h >= 9) gapInj = 30;
+      if (day === 9) gapInj = 62;
+      if (day === 10) gapInj = 40;
+      if (day === 11) gapInj = 12;
+      var cellGap = 25 + 0.24 * (soc - 50) + 0.62 * (day - 1) + 1.1 * Math.abs(cur) + gapInj + nz(2.2);
+
+      var cabinInj = 0;
+      if (day === 22 && h === 14) cabinInj = 6.0;
+      if (day === 22 && h === 15) cabinInj = 7.4;
+      if (day === 27 && h >= 12 && h <= 14) cabinInj = 4.8;
+      var cabinT = 25.5 + 2.3 * (Math.abs(cur) / 0.46) + 0.4 * Math.sin((h - 8) / 24 * 6.283)
+        + 0.02 * (day - 1) + cabinInj + nz(0.3);
+
+      var dtInj = 0;
+      if (day === 27 && h >= 12 && h <= 14) dtInj = 2.1;
+      var coolantDt = 3.1 + 1.25 * Math.abs(cur) + dtInj + nz(0.22);
+
+      var insul = 1180 + nz(45);
+      if (day === 18 && h === 10) insul = 470;
+
+      var comm = 1;
+      if (day === 15 && (h === 10 || h === 11)) comm = 0;
+
+      rows.push({ i: i, day: day, h: h, cur: +cur.toFixed(3), soc: +soc.toFixed(1),
+        cellGap: +cellGap.toFixed(1), cabinT: +cabinT.toFixed(1), coolantDt: +coolantDt.toFixed(1),
+        insul: Math.round(insul), comm: comm, fire: 0, door: (h >= 9 && h < 10) ? 1 : 0 });
+    }
+    return rows;
+  }
+
+  var ROWS = buildSeries();
+
+  function judge(rows) {
+    var evs = [];
+    var st = { gap: 'ok', temp: 'ok', ins: 'ok', comm: 'ok', fire: 'ok' };
+    var hist = { gap80: [], gap60: [], temp: [], comm: [] };
+
+    function push(r, ch, level, who, title, detail, action) {
+      evs.push({ t: r.i, day: r.day, hour: r.h, ch: ch, level: level,
+        who: who, title: title, detail: detail, action: action });
+    }
+
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (r.comm === 0) {
+        hist.comm.push(1);
+        if (hist.comm.length >= 2 && st.comm !== 'gap') {
+          st.comm = 'gap';
+          push(r, 'comm', 'gap', '通讯', '数据中断，判断暂停',
+            '连续两个时段收不到数据，页面保留最后一次已知值，不补数。', '等通讯恢复；恢复后补记一条起止。');
+        }
+        continue;
+      } else if (st.comm === 'gap') {
+        st.comm = 'ok';
+        push(r, 'comm', 'recover', '通讯', '通讯恢复，留史',
+          '中断期间的判断空缺已标注，不追溯、不插值。', '无需人工处置。');
+        hist.comm = [];
+      } else { hist.comm = []; }
+
+      if (r.fire === 1 && st.fire !== 'alert') {
+        st.fire = 'alert';
+        push(r, 'fire', 'alert', '消防', '消防信号闭合',
+          '干接点由断开转为闭合，来源：柜内消防控制箱。', '立即通知业主现场确认，不自动处置。');
+      }
+
+      hist.gap80.push(r.cellGap >= 80 ? 1 : 0);
+      hist.gap60.push(r.cellGap >= 60 ? 1 : 0);
+      var a80 = hist.gap80.slice(-2), a60 = hist.gap60.slice(-3);
+      var isAlertGap = a80.length === 2 && a80[0] === 1 && a80[1] === 1;
+      var isTrendGap = a60.length === 3 && a60[0] === 1 && a60[1] === 1 && a60[2] === 1;
+
+      if (isAlertGap && st.gap !== 'alert') {
+        st.gap = 'alert';
+        push(r, 'gap', 'alert', '单体一致性', '单体压差连续两段越线 ' + r.cellGap + 'mV',
+          '平常约 30mV；从 ' + fmt(r.day, r.h) + ' 起连续两段明显偏离。',
+          '建议派人检查接线、采样线与风道；不建议直接停机。');
+      } else if (!isAlertGap && isTrendGap && st.gap === 'ok') {
+        st.gap = 'trend';
+        push(r, 'gap', 'trend', '单体一致性', '单体压差抬头 ' + r.cellGap + 'mV',
+          '连续三个时段高于它自己的平常线，还没到告警的程度，先记趋势。', '先观察，暂不派人。');
+      } else if (!isAlertGap && !isTrendGap && (st.gap === 'alert' || st.gap === 'trend') && r.cellGap < 50) {
+        st.gap = 'ok';
+        push(r, 'gap', 'recover', '单体一致性', '压差回落至 ' + r.cellGap + 'mV',
+          '回到它自己的平常范围并保持，转入恢复观察。', '无需处置；记录保留。');
+      }
+
+      var hot = r.cabinT >= 33, loaded = Math.abs(r.cur) >= 0.35;
+      var dtHigh = r.coolantDt >= 5.5, dtLow = r.coolantDt < 5.0;
+
+      if (hot && dtLow) {
+        if (st.temp !== 'suspect') {
+          st.temp = 'suspect';
+          push(r, 'temp', 'suspect', '读数可信度', '温度读到 ' + r.cabinT + '℃，但不像真的',
+            '舱温到 ' + r.cabinT + '℃，液冷进出水温差只有 ' + r.coolantDt + '℃。两个数对不上，先疑传感器，不报警。',
+            '安排校表；不惊动业主。');
+        }
+      } else if (hot && loaded && dtHigh) {
+        hist.temp.push(1);
+        if (hist.temp.length >= 2 && st.temp !== 'alert') {
+          st.temp = 'alert';
+          push(r, 'temp', 'alert', '温度与负载', '舱温 ' + r.cabinT + '℃，几件事同时成立',
+            '温度 ' + r.cabinT + '℃、电流 ' + Math.abs(r.cur).toFixed(2) + 'C、液冷温差 ' + r.coolantDt + '℃，连续两段。这次不是传感器问题。',
+            '建议当天避峰、检查风道与滤网；必要时空载降温。');
+        }
+      } else {
+        hist.temp = [];
+        if (st.temp === 'alert' || st.temp === 'suspect') {
+          var wasSus = st.temp === 'suspect';
+          st.temp = 'ok';
+          push(r, 'temp', 'recover', wasSus ? '读数可信度' : '温度与负载',
+            wasSus ? '读数回到正常范围' : ('温度回到 ' + r.cabinT + '℃'),
+            wasSus ? '之前那条按传感器问题处理，已核实不是真温升。' : '条件不再同时成立，转恢复观察。',
+            wasSus ? '核对完成，无需处置。' : '保留处理记录。');
+        }
+      }
+
+      if (r.insul < 500 && st.ins !== 'alert') {
+        st.ins = 'alert';
+        push(r, 'ins', 'alert', '绝缘', '绝缘电阻跌到 ' + r.insul + 'kΩ',
+          '平常约 1180kΩ，本段跌破告警范围。', '建议绝缘复测；单点不重复上报。');
+      } else if (r.insul >= 500 && r.insul < 800 && st.ins === 'ok') {
+        st.ins = 'trend';
+        push(r, 'ins', 'trend', '绝缘', '绝缘 ' + r.insul + 'kΩ，低于平常',
+          '还没到告警的程度，先记趋势。', '观察，下次巡检复测。');
+      } else if (r.insul >= 800 && (st.ins === 'alert' || st.ins === 'trend')) {
+        st.ins = 'ok';
+        push(r, 'ins', 'recover', '绝缘', '绝缘回升至 ' + r.insul + 'kΩ',
+          '回到平常范围，转恢复观察。', '记录保留。');
+      }
+    }
+    return evs;
+  }
+
+  var EVENTS = judge(ROWS);
+
+  var cur = 8, timer = null, speedIdx = 0;
+  var SPEEDS = [1, 4, 16], INTERVALS = [900, 260, 80];
+  var msgMode = 'tpl', cfg = { base: '', model: '' };
+
+  function fmt(d, h) { return 'D' + d + ' ' + (h < 10 ? '0' + h : h) + ':00'; }
+  function row() { return ROWS[cur]; }
+
+  function eventsUpTo(t) {
+    var out = [];
+    for (var i = 0; i < EVENTS.length; i++) if (EVENTS[i].t <= t) out.push(EVENTS[i]);
+    return out;
+  }
+
+  function liveLevel() {
+    var evs = eventsUpTo(cur), last = {};
+    for (var i = 0; i < evs.length; i++) last[evs[i].ch] = evs[i].level;
+    if (ROWS[cur].comm === 0) return 'gap';
+    if (last.fire === 'alert' || last.ins === 'alert' || last.temp === 'alert' || last.gap === 'alert') return 'bad';
+    if (last.gap === 'trend' || last.temp === 'trend' || last.temp === 'suspect' || last.ins === 'trend') return 'warn';
+    return 'ok';
+  }
+
+  var PILL = { ok: ['', '正常'], warn: ['warn', '注意'], bad: ['bad', '告警'], gap: ['gap', '数据中断'] };
+
+  function renderHead() {
+    var r = row();
+    document.getElementById('cDay').textContent = '第 ' + r.day + ' 天';
+    document.getElementById('cTime').textContent = (r.h < 10 ? '0' + r.h : r.h) + ':00';
+    document.getElementById('boothTime').textContent = '第 ' + r.day + ' 天 ' + (r.h < 10 ? '0' + r.h : r.h) + ':00';
+    var p = PILL[liveLevel()], el = document.getElementById('statePill');
+    el.className = 'statepill' + (p[0] ? ' ' + p[0] : '');
+    el.textContent = p[1];
+  }
+
+  function lastKnown() {
+    for (var i = cur - 1; i >= 0; i--) if (ROWS[i].comm === 1) return ROWS[i];
+    return ROWS[0];
+  }
+
+  function renderSoc() {
+    var r0 = row(), lk = lastKnown();
+    var v = r0.comm === 0 ? lk.soc : r0.soc;
+    document.getElementById('dSoc').textContent = Math.round(v);
+    document.getElementById('dSocTag').textContent = r0.comm === 0 ? ('上次 ' + lk.h + ':00') : '电量 %';
+    document.getElementById('donut').style.setProperty('--p', Math.max(0, Math.min(100, v)) + '%');
+  }
+
+  var POINTS = [
+    { k: 'soc', n: '电量', u: '%', src: 'BMS', reg: '40009', f: function (r) { return r.soc.toFixed(0); } },
+    { k: 'cellGap', n: '单体压差', u: 'mV', src: 'BMS', reg: '40012', f: function (r) { return r.cellGap.toFixed(0); } },
+    { k: 'cabinT', n: '舱内温度', u: '℃', src: '温控', reg: '40021', f: function (r) { return r.cabinT.toFixed(1); } },
+    { k: 'coolantDt', n: '液冷温差', u: '℃', src: '液冷', reg: '40023', f: function (r) { return r.coolantDt.toFixed(1); } },
+    { k: 'cur', n: '充放电流', u: 'C', src: 'PCS', reg: '40014', f: function (r) { return (r.cur >= 0 ? '+' : '') + r.cur.toFixed(2); } },
+    { k: 'insul', n: '绝缘电阻', u: 'kΩ', src: 'BMS', reg: '40031', f: function (r) { return r.insul; } },
+    { k: 'fire', n: '消防干接点', u: '', src: '消防', reg: 'DI-01', f: function (r) { return r.fire ? '闭合' : '断开'; } },
+    { k: 'door', n: '柜门', u: '', src: '门禁', reg: 'DI-02', f: function (r) { return r.door ? '开' : '关'; } }
+  ];
+
+  function toneOf(k, r) {
+    if (r.comm === 0) return 'g';
+    if (k === 'cellGap') { if (r.cellGap >= 80) return 'b'; if (r.cellGap >= 60) return 'w'; }
+    if (k === 'cabinT') { if (r.cabinT >= 33) return 'w'; }
+    if (k === 'insul') { if (r.insul < 500) return 'b'; if (r.insul < 800) return 'w'; }
+    return '';
+  }
+
+  function spark(k, r) {
+    var st = r.i - r.h, arr = [];
+    for (var j = st; j <= r.i; j++) if (ROWS[j] && ROWS[j].comm !== 0 && j >= 0) arr.push(ROWS[j][k]);
+    if (arr.length < 3) return '<svg class="sp" viewBox="0 0 54 16"></svg>';
+    var mn = Math.min.apply(null, arr), mx = Math.max.apply(null, arr);
+    if (mx - mn < 1e-6) { mn -= 0.5; mx += 0.5; }
+    var W = 54, H = 16, d = '';
+    for (var n = 0; n < arr.length; n++) {
+      var x = (n / (arr.length - 1)) * W;
+      var y = H - 2 - ((arr[n] - mn) / (mx - mn)) * (H - 4);
+      d += (n ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    return '<svg class="sp" viewBox="0 0 54 16" preserveAspectRatio="none"><path d="' + d + '"/></svg>';
+  }
+
+  function baseOf(r, key) {
+    var vals = [];
+    for (var k = 1; k <= 7; k++) {
+      var j = r.i - k * 24;
+      if (j >= 0 && ROWS[j].comm === 1) vals.push(ROWS[j][key]);
+    }
+    if (!vals.length) {
+      for (var m = 0; m < r.i && vals.length < 24; m++) if (ROWS[m].comm === 1) vals.push(ROWS[m][key]);
+    }
+    if (!vals.length) return null;
+    var s = 0;
+    for (var i = 0; i < vals.length; i++) s += vals[i];
+    return s / vals.length;
+  }
+
+  function renderPoints() {
+    var r = row(), html = '';
+    for (var i = 0; i < POINTS.length; i++) {
+      var p = POINTS[i], tone = toneOf(p.k, r), val = r.comm === 0 ? '—' : p.f(r);
+      if (p.k === 'cabinT' && liveLevel() === 'bad' && r.cabinT >= 33) tone = 'b';
+      html += '<div class="ptrow ' + tone + '"><div class="n"><em></em>' + p.n + '</div>'
+        + '<div class="v">' + val + (p.u && r.comm !== 0 ? '<u>' + p.u + '</u>' : '') + '</div>'
+        + spark(p.k, r) + '</div>';
+    }
+    document.getElementById('ptList').innerHTML = html;
+
+    var gb = baseOf(r, 'cellGap'), ib = baseOf(r, 'insul'), tb = baseOf(r, 'cabinT');
+    document.getElementById('baseInfo').innerHTML = '<div class="h">它自己的老底子 · 过去七天</div>'
+      + '<div class="r"><span>压差平常</span><b>' + (gb === null ? '—' : gb.toFixed(0) + ' mV') + '</b></div>'
+      + '<div class="r"><span>舱温平常</span><b>' + (tb === null ? '—' : tb.toFixed(1) + ' °C') + '</b></div>'
+      + '<div class="r"><span>绝缘平常</span><b>' + (ib === null ? '—' : Math.round(ib) + ' kΩ') + '</b></div>';
+  }
+
+  /* ---------- 场景浮层标签 ---------- */
+  function setTag(id, tone, main, sub) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var lead = /\blead\b/.test(el.className) ? ' lead' : '';
+    el.className = 'tag ' + tone + lead + ' on';
+    el.querySelector('b').textContent = main;
+    el.querySelector('small').textContent = sub;
+  }
+
+  function renderTags() {
+    var r = row(), lv = liveLevel();
+    var gapTone = r.comm === 0 ? 'ok' : (r.cellGap >= 80 ? 'bad' : (r.cellGap >= 60 ? 'warn' : 'ok'));
+    var tempTone = r.comm === 0 ? 'ok' : (r.cabinT >= 33 ? (lv === 'bad' ? 'bad' : 'warn') : 'ok');
+    var curTone = r.comm === 0 ? 'ok' : ((Math.abs(r.cur) >= 0.35 && r.cabinT >= 33) ? 'warn' : 'ok');
+
+    setTag('tagA', tempTone, r.comm === 0 ? '舱温 —' : '舱温 ' + r.cabinT.toFixed(1) + '℃',
+      r.comm === 0 ? '信号未到' : '液冷温差 ' + r.coolantDt.toFixed(1) + '℃');
+    setTag('tagB', gapTone, r.comm === 0 ? '压差 —' : '压差 ' + r.cellGap.toFixed(0) + 'mV',
+      r.comm === 0 ? '信号未到' : '平常 ' + Math.round(baseOf(r, 'cellGap') || 25) + 'mV');
+    setTag('tagC', curTone, 'PCS ' + (r.comm === 0 ? '—' : (r.cur >= 0 ? '+' : '') + r.cur.toFixed(2) + 'C'),
+      r.comm === 0 ? '信号未到' : (r.cur > 0.02 ? '充电中' : (r.cur < -0.02 ? '放电中' : '静置')));
+
+    document.getElementById('obsText').textContent = r.comm === 0
+      ? '小宇正在观察 · 收不到数据，先不判 · 全部为合成数据'
+      : '小宇正在观察 · 八路信号 8/8 · 全部为合成数据';
+  }
+
+  /* ---------- AI 在做什么 ---------- */
+  function peerRank(r) {
+    var seed = mulberry32(r.i * 7919 + 13);
+    var raw = Math.round((r.cellGap / 80) * 19 + (seed() * 2 - 1));
+    return Math.max(1, Math.min(20, raw));
+  }
+
+  function condCount(r) {
+    if (r.comm === 0) return 0;
+    var c = 0;
+    if (r.cellGap >= 60) c++;
+    if (r.cabinT >= 33) c++;
+    if (r.coolantDt >= 5.5) c++;
+    if (r.insul < 800) c++;
+    if (Math.abs(r.cur) >= 0.35) c++;
+    return c;
+  }
+
+  function thinkData() {
+    var r = row(), lv = liveLevel(), base = baseOf(r, 'cellGap');
+    var live = r.comm !== 0;            // 这一刻有没有数，没有就不给排名、不给对照
+    var dv = (!live || base === null) ? null : r.cellGap - base;
+    var cnt = eventsUpTo(cur).length;
+    var tone = (lv === 'bad' ? 'bad' : (lv === 'warn' ? 'warn' : ''));
+    var v5 = { ok: '没问题', warn: '先记着', bad: '得叫人', gap: '先停手' }[lv];
+    return [
+      { k: '收数', v: r.comm ? '8 / 8' : '0 / 8', nt: 'BMS、PCS、液冷、消防各回一句', tone: r.comm ? '' : 'warn' },
+      { k: '对照', v: dv === null ? (live ? '无历史' : '—') : ((dv >= 0 ? '+' : '') + dv.toFixed(0) + ' mV'), nt: '跟它自己过去七天同一时刻比', tone: (dv !== null && dv > 30) ? 'warn' : '' },
+      { k: '同类', v: live ? ('第 ' + peerRank(r) + ' / 20') : '—', nt: '同批 19 台横排看谁不一样', tone: live && peerRank(r) >= 18 ? tone : '' },
+      { k: '同时', v: live ? (condCount(r) + ' 件') : '—', nt: '单看一件不算事，撞一起才算', tone: live ? (condCount(r) >= 3 ? 'bad' : (condCount(r) === 2 ? 'warn' : '')) : '' },
+      { k: '定性', v: v5, nt: '能不能打扰人，在这里定', tone: tone },
+      { k: '记账', v: '第 ' + cnt + ' 条', nt: '谁判谁看谁签都留着', tone: '' }
+    ];
+  }
+
+  var TS_EL = null, tTimer = null;
+
+  function buildTrace() {
+    var html = '';
+    for (var i = 1; i <= 6; i++) {
+      html += '<div class="ts"><div class="k"><i>' + i + '</i><b>—</b></div><span class="tv">—</span><span class="nt">—</span></div>';
+    }
+    document.getElementById('trace').innerHTML = html;
+    TS_EL = document.getElementById('trace').querySelectorAll('.ts');
+  }
+
+  function runTrace(mode) {
+    if (!TS_EL) return;
+    clearTimeout(tTimer);
+    var n = TS_EL.length, i = 0;
+    for (var j = 0; j < n; j++) TS_EL[j].className = 'ts';
+    var gap = (mode === 'full') ? 170 : 35;
+    (function loop() {
+      if (i >= n) { TS_EL[n - 1].className = 'ts done'; return; }
+      var t = TS_EL[i].getAttribute('data-t') || '';
+      TS_EL[i].className = 'ts cur' + (t ? ' ' + t : '');
+      if (i > 0) TS_EL[i - 1].className = 'ts done';
+      i++;
+      tTimer = setTimeout(loop, gap);
+    })();
+  }
+
+  function renderTrace(mode) {
+    var data = thinkData();
+    if (!TS_EL) buildTrace();
+    for (var i = 0; i < data.length && i < TS_EL.length; i++) {
+      TS_EL[i].setAttribute('data-t', data[i].tone || '');
+      TS_EL[i].querySelector('.k b').textContent = data[i].k;
+      TS_EL[i].querySelector('.tv').textContent = data[i].v;
+      TS_EL[i].querySelector('.nt').textContent = data[i].nt;
+    }
+    runTrace(mode);
+  }
+
+  function recentEv(levels) {
+    var evs = eventsUpTo(cur);
+    for (var i = evs.length - 1; i >= 0; i--) if (levels.indexOf(evs[i].level) >= 0) return evs[i];
+    return null;
+  }
+
+  function verdictOf(lv) {
+    if (lv === 'gap') return ['判断停一下', '数据中断', '信号没上来，页面留的是<b>最后一次已知值</b>。不补数、不猜，空着比错着好。'];
+    if (lv === 'bad') {
+      var ea = recentEv(['alert']);
+      var why = ea ? ('<b>' + ea.who + '</b> 这一处越了线，而且不是单点抖动') : '有一处越了线，而且不是单点抖动';
+      return ['这个得叫人', '告警', why + '——当天处理，不用停机。'];
+    }
+    if (lv === 'warn') {
+      var ew = recentEv(['trend', 'suspect']);
+      var ww = ew ? ('<b>' + ew.who + '</b> 开始往下走') : '有一处比平常高';
+      return ['先记一笔', '注意', ww + '。<b>还没到叫人的线</b>，记下来，明天再看一眼。'];
+    }
+    return ['没看出异常', '正常', '八路信号都在它自己的老范围里，正按平常的样子充放电。<b>不用管</b>。'];
+  }
+
+  function renderVerdict() {
+    var lv = liveLevel(), v = verdictOf(lv), box = document.getElementById('verdict');
+    box.className = 'verdict ' + lv + ' on';
+    document.getElementById('vdTitle').textContent = v[0];
+    document.getElementById('vdTag').textContent = v[1];
+    document.getElementById('vdText').innerHTML = v[2];
+  }
+
+  /* ---------- 证据链 ---------- */
+  function renderEvidence() {
+    var r = row(), lv = liveLevel(), base = baseOf(r, 'cellGap'), ib = baseOf(r, 'insul'), arr = [];
+
+    if (lv === 'gap') {
+      arr.push('连续 <b>2 个时段</b> 收不到 BMS / PCS 数据，柜内规则把判断挂起。');
+      arr.push('页面留的是 <b>D' + lastKnown().day + ' ' + lastKnown().h + ':00</b> 的最后一次已知值，不补数、不插值。');
+      arr.push('中断起止已记账，恢复后补记一条，缺口不追溯。');
+    } else if (lv === 'bad') {
+      var ea = recentEv(['alert']);
+      if (ea && ea.ch === 'gap') {
+        arr.push('单体压差 <b>' + r.cellGap.toFixed(0) + 'mV</b>，连续两段越过 <b>80mV</b> 告警线。');
+        arr.push('跟老底子比：过去七天同一时刻 <b>' + (base === null ? '—' : base.toFixed(0)) + 'mV</b>，今天多出 <b>' + (base === null ? '—' : (r.cellGap - base).toFixed(0)) + 'mV</b>。');
+        arr.push('同批 20 台横排，它在第 <b>' + peerRank(r) + '</b> 位。');
+      } else if (ea && ea.ch === 'ins') {
+        arr.push('绝缘电阻 <b>' + r.insul + 'kΩ</b>，跌破 <b>500kΩ</b> 告警线（平常 ' + (ib === null ? '—' : Math.round(ib)) + 'kΩ）。');
+        arr.push('同一时段舱温 <b>' + r.cabinT.toFixed(1) + '℃</b>、液冷温差 <b>' + r.coolantDt.toFixed(1) + '℃</b>，未见同步异常。');
+        arr.push('单点越线，只上报一次，不重复提醒。');
+      } else {
+        arr.push('舱温 <b>' + r.cabinT.toFixed(1) + '℃</b>，越过 <b>33℃</b> 线。');
+        arr.push('同时成立：负载 <b>' + Math.abs(r.cur).toFixed(2) + 'C</b>（高于 0.35C）、液冷温差 <b>' + r.coolantDt.toFixed(1) + '℃</b>（高于 5.5℃），连续两段。');
+        arr.push('这次温差跟着涨，说明<b>不是传感器漂</b>，是真热。');
+      }
+      arr.push('判定由柜内规则给出，<b>未调用模型</b>。');
+    } else if (lv === 'warn') {
+      var ew = recentEv(['trend', 'suspect']);
+      if (ew && ew.ch === 'temp') {
+        arr.push('舱温读到 <b>' + r.cabinT.toFixed(1) + '℃</b>，但液冷温差只有 <b>' + r.coolantDt.toFixed(1) + '℃</b>。');
+        arr.push('两个数对不上：真热起来，温差会跟着涨。<b>先疑传感器</b>，不按告警处理。');
+        arr.push('已排班校表，业主不被惊动。');
+      } else if (ew && ew.ch === 'ins') {
+        arr.push('绝缘 <b>' + r.insul + 'kΩ</b>，低于平常 ' + (ib === null ? '—' : Math.round(ib)) + 'kΩ，还没到告警线。');
+        arr.push('同批 20 台里排第 <b>' + peerRank(r) + '</b> 位，属于个体偏早。');
+        arr.push('先记趋势，下次巡检复测。');
+      } else {
+        arr.push('压差 <b>' + r.cellGap.toFixed(0) + 'mV</b>，连续三个时段高于它自己的平常线（' + (base === null ? '—' : base.toFixed(0)) + 'mV）。');
+        arr.push('还没到 <b>80mV</b> 告警线，按趋势记，不派人。');
+        arr.push('同批 20 台里排第 <b>' + peerRank(r) + '</b> 位。');
+      }
+      arr.push('判定由柜内规则给出，<b>未调用模型</b>。');
+    } else {
+      arr.push('八路信号 <b>8/8</b> 全部到手，无一缺失。');
+      arr.push('压差 <b>' + r.cellGap.toFixed(0) + 'mV</b>，与老底子 ' + (base === null ? '—' : base.toFixed(0)) + 'mV 齐平；同批排 <b>' + peerRank(r) + '</b> 位。');
+      arr.push('舱温 <b>' + r.cabinT.toFixed(1) + '℃</b>、绝缘 <b>' + r.insul + 'kΩ</b> 都在各自范围里。');
+      arr.push('什么都没越线，<b>按平常记录</b>，不打扰人。');
+    }
+
+    document.getElementById('evCnt').textContent = arr.length + ' 条';
+    document.getElementById('evList').innerHTML = arr.map(function (t) { return '<div class="ev">' + t + '</div>'; }).join('');
+  }
+
+  function renderDayChart() {
+    var r = row(), base = (r.day - 1) * 24, html = '', maxA = 0.5;
+    for (var i = 0; i < 24; i++) maxA = Math.max(maxA, Math.abs(ROWS[base + i].cur));
+    for (var h = 0; h < 24; h++) {
+      var q = ROWS[base + h], a = Math.abs(q.cur);
+      var dir = q.cur > 0.02 ? 'c' : (q.cur < -0.02 ? 'd' : 'n');
+      var hh = Math.max(1, Math.round(a / maxA * 30));
+      html += '<div class="dcol ' + dir + (h === r.h ? ' cur' : '') + '" title="' + h + ':00 · ' + q.cur + 'C"><i style="height:' + hh + 'px"></i></div>';
+    }
+    document.getElementById('dcols').innerHTML = html;
+  }
+
+  function renderMonth() {
+    var c = { alert: 0, trend: 0, recover: 0, gap: 0, suspect: 0 };
+    var evs = eventsUpTo(cur);
+    for (var i = 0; i < evs.length; i++) if (c[evs[i].level] !== undefined) c[evs[i].level]++;
+    document.getElementById('monthGrid').innerHTML = ''
+      + '<div class="mc al"><b>' + c.alert + '</b><small>告警</small></div>'
+      + '<div class="mc tr"><b>' + (c.trend + c.suspect) + '</b><small>注意</small></div>'
+      + '<div class="mc rp"><b>' + c.recover + '</b><small>已回落</small></div>'
+      + '<div class="mc gp"><b>' + c.gap + '</b><small>断供</small></div>';
+  }
+
+  function dayEvents(d) {
+    var out = [];
+    for (var i = 0; i < EVENTS.length; i++) if (EVENTS[i].day === d && EVENTS[i].t <= cur) out.push(EVENTS[i]);
+    return out;
+  }
+
+  function snapshotRow(d) {
+    var evs = dayEvents(d);
+    for (var i = evs.length - 1; i >= 0; i--) if (evs[i].level !== 'recover') return ROWS[evs[i].t];
+    for (var j = cur; j >= 0; j--) if (ROWS[j] && ROWS[j].day === d) return ROWS[j];
+    return ROWS[cur];
+  }
+
+  function num(v) { return '<span class="num">' + v + '</span>'; }
+
+  function buildTpl(d, r) {
+    var evs = dayEvents(d);
+    var hasAlert = false, hasTrend = false, hasGap = false, hasSus = false, hasRec = false;
+    for (var i = 0; i < evs.length; i++) {
+      var l = evs[i].level;
+      if (l === 'alert') hasAlert = true;
+      if (l === 'trend') hasTrend = true;
+      if (l === 'gap') hasGap = true;
+      if (l === 'suspect') hasSus = true;
+      if (l === 'recover') hasRec = true;
+    }
+    var line1;
+    if (r.comm === 0) line1 = '这一刻<b>信号没上来</b>，判断挂起，页面留的是最后一次已知值——不补、不猜。';
+    else if (hasAlert && hasRec) line1 = '今天这柜<b>出过一次问题，已经回落</b>，记录留着。';
+    else if (hasAlert) line1 = '今天这柜<b>有事</b>，需要你看一眼，但不是立刻停机的事。';
+    else if (hasGap) line1 = '今天有一段数据没上来，判断空了一截，后面补记了。';
+    else if (hasSus) line1 = '今天的温度读数不像真的，我们没报警，先按传感器问题处理。';
+    else if (hasTrend) line1 = '今天这柜还算稳，但有一处开始跑偏。';
+    else line1 = '今天这柜正常，没有需要你管的事。';
+
+    var items = [];
+    if (r.comm === 0) {
+      items.push('八路信号 <b>0 / 8</b>，本时点没有可用的数。');
+      items.push('最后一次已知：D' + lastKnown().day + ' ' + lastKnown().h + ':00 · 压差 ' + lastKnown().cellGap.toFixed(0) + 'mV · 舱温 ' + lastKnown().cabinT.toFixed(1) + '℃。');
+    } else {
+    items.push('压差 ' + num(r.cellGap.toFixed(0) + 'mV') + '（' + (r.cellGap >= 60 ? '偏高，平常约 ' + Math.round(baseOf(r, 'cellGap') || 30) + 'mV' : '正常')
+      + '）· 电量 ' + num(r.soc.toFixed(0) + '%') + '· 负载 ' + num((Math.abs(r.cur) >= 0.35 ? '高 ' : '') + Math.abs(r.cur).toFixed(2) + 'C')
+      + '（' + (r.cur > 0.02 ? '充电' : (r.cur < -0.02 ? '放电' : '静置')) + '）。');
+    items.push('舱温 ' + num(r.cabinT.toFixed(1) + '℃') + '（' + (r.cabinT >= 33 ? '偏高' : '正常')
+      + '）· 液冷温差 ' + num(r.coolantDt.toFixed(1) + '℃') + '（' + (r.coolantDt >= 5.5 ? '偏高' : '正常') + '）。');
+    items.push('绝缘 ' + num(r.insul + 'kΩ') + '（' + (r.insul < 500 ? '偏低' : '正常') + '）。');
+    }
+
+    var act;
+    if (r.comm === 0) act = '<b>不用派人</b>：先等数据回来，回来了再判这一截。';
+    else if (hasAlert && hasRec) act = '<b>不用再派人</b>：已经回落，明早看一眼趋势就行。';
+    else if (hasAlert) act = '建议<b>今天派人去</b>：先看风道与接线，避峰运行；不用停机。';
+    else if (hasSus) act = '建议<b>安排校表</b>，不惊动业主。';
+    else if (hasTrend) act = '建议<b>明天上午去看一眼</b>，不用停机。';
+    else act = '<b>不用派人</b>。';
+
+    return '<div class="nh"><span>给业主 · 第 ' + d + ' 天</span><span>草稿 · 现在 ' + r.h + ':00</span></div>'
+      + '<p>' + line1 + '</p><p><b>关键数：</b><br>' + items.join('<br>') + '</p><p>' + act + '</p>'
+      + '<p class="src">数字来源：台账 ' + fmt(d, r.h) + ' · 判断在柜内完成 · 未调用模型</p>';
+  }
+
+  function buildModelPrompt(d, r) {
+    var facts = dayEvents(d).map(function (e) { return { level: e.level, who: e.who, title: e.title, detail: e.detail }; });
+    return {
+      sys: '你只负责把下面的事实写成人话。只能引用给出的数字，不许计算、不许新增数字、不许自己下结论。输出不超过 140 字，分结论、关键数、要不要派人三段。',
+      usr: JSON.stringify({ site: 'UT-ESS-03', day: d,
+        points: { soc: r.soc, cell_gap_mv: r.cellGap, cabin_t: r.cabinT, current_c: r.cur, coolant_dt: r.coolantDt, insul_kohm: r.insul },
+        verdicts: facts })
+    };
+  }
+
+  function callModel(p) {
+    var url = cfg.base.replace(/\/+$/, '') + '/chat/completions';
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: cfg.model, temperature: 0.2, max_tokens: 300,
+        messages: [{ role: 'system', content: p.sys }, { role: 'user', content: p.usr }] }) })
+      .then(function (res) { if (!res.ok) throw new Error('bad'); return res.json(); })
+      .then(function (j) { return (j && j.choices && j.choices[0] && j.choices[0].message) ? j.choices[0].message.content : null; });
+  }
+
+  function renderMsg() {
+    // 消息卡与左栏、浮层标签用同一行数据，避免"消息说 96、标签说 105"
+    var d = row().day, r = row(), box = document.getElementById('msgBox');
+    if (msgMode === 'tpl' || !cfg.base) { box.innerHTML = buildTpl(d, r); return; }
+    box.innerHTML = buildTpl(d, r).replace(/<p class="src">[\s\S]*?<\/p>/, '<p class="src">正在向模型要一句人话…</p>');
+    callModel(buildModelPrompt(d, r)).then(function (txt) {
+      if (!txt) { box.innerHTML = buildTpl(d, r); return; }
+      box.innerHTML = '<div class="nh"><span>给业主 · 第 ' + d + ' 天</span><span>草稿 · 模型</span></div>'
+        + '<p>' + txt.replace(/\n/g, '<br>') + '</p>'
+        + '<p class="src">数字来源：台账 ' + fmt(d, row().h) + ' · 模型只做表达 · 人审后发</p>';
+    }).catch(function () { box.innerHTML = buildTpl(d, r); });
+  }
+
+  var CALC_IDS = ['pSub', 'pHw', 'pInst', 'pOps', 'cLoss', 'cBefore', 'cAfter', 'cN', 'cCn'];
+
+  function cval(id) {
+    var el = document.getElementById(id);
+    if (!el) return 0;
+    var n = parseFloat(el.value);
+    return isNaN(n) || n < 0 ? 0 : n;
+  }
+  function money(n) { return n >= 10000 ? (n / 10000).toFixed(1) + ' 万' : Math.round(n).toLocaleString('en-US'); }
+
+  function calc() {
+    var sub = cval('pSub'), hw = cval('pHw'), inst = cval('pInst'), ops = cval('pOps');
+    var loss = cval('cLoss'), before = cval('cBefore'), after = cval('cAfter');
+    var n = cval('cN'), cn = cval('cCn');
+    var dep = hw / 5, yearCost = ops + dep, gross = sub - yearCost;
+    var gm = sub > 0 ? gross / sub * 100 : 0;
+    var payMonth = gross > 0 ? (hw + inst) / gross * 12 : 999;
+    var save = (before - after) * loss + n * 0.4 * cn;
+    var roi = sub > 0 ? save / sub : 0;
+    var cMonth = save > 0 ? sub / save * 12 : 999;
+
+    document.getElementById('sumMoney').textContent = money(gross) + ' 元';
+    document.getElementById('calcOut').innerHTML = '<div class="hd">宇泰这边 · 一台</div>'
+      + '<div class="ln"><span>年成本（运维 + 折旧）</span><b>' + money(yearCost) + ' 元</b></div>'
+      + '<div class="ln"><span>年毛利</span><b class="g">' + money(gross) + ' 元</b></div>'
+      + '<div class="ln"><span>毛利率</span><b>' + gm.toFixed(0) + '%</b></div>'
+      + '<div class="ln"><span>投入回本</span><b>' + (payMonth >= 999 ? '算不出' : payMonth.toFixed(0) + ' 个月') + '</b></div>'
+      + '<div class="hd">铺开之后</div>'
+      + '<div class="ln"><span>100 台 · 年收入</span><b>' + money(sub * 100) + ' 元</b></div>'
+      + '<div class="ln"><span>100 台 · 年毛利</span><b class="g">' + money(gross * 100) + ' 元</b></div>'
+      + '<div class="ln"><span>1000 台 · 年毛利</span><b class="g">' + money(gross * 1000) + ' 元</b></div>'
+      + '<div class="hd">业主这边 · 一台一年</div>'
+      + '<div class="ln"><span>少停 / 少跑</span><b>省 ' + money(save) + ' 元</b></div>'
+      + '<div class="ln"><span>付订阅</span><b>' + money(sub) + ' 元</b></div>'
+      + '<div class="ln"><span>业主回报</span><b class="g">' + roi.toFixed(1) + ' 倍</b></div>'
+      + '<div class="ln"><span>省回订阅</span><b>' + (cMonth >= 999 ? '算不出' : cMonth.toFixed(1) + ' 个月') + '</b></div>';
+  }
+
+  function loadCalc() {
+    try {
+      var c = JSON.parse(localStorage.getItem('yt_calc') || '{}');
+      for (var i = 0; i < CALC_IDS.length; i++) {
+        if (c[CALC_IDS[i]] != null) {
+          var el = document.getElementById(CALC_IDS[i]);
+          if (el) el.value = c[CALC_IDS[i]];
+        }
+      }
+    } catch (e) { }
+  }
+  function saveCalc() {
+    var o = {};
+    for (var i = 0; i < CALC_IDS.length; i++) {
+      var el = document.getElementById(CALC_IDS[i]);
+      if (el) o[CALC_IDS[i]] = el.value;
+    }
+    try { localStorage.setItem('yt_calc', JSON.stringify(o)); } catch (e) { }
+  }
+
+  function parseCSV(text) {
+    var lines = text.replace(/^\ufeff/, '').replace(/\r/g, '').split('\n'), rows = [];
+    for (var i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      var c = lines[i].split(',');
+      if (c.length < 12) continue;
+      var day = +c[0], h = +c[1];
+      if (isNaN(day) || isNaN(h)) continue;
+      rows.push({ i: rows.length, day: day, h: h, soc: +c[3], cellGap: +c[4], cabinT: +c[5],
+        cur: +c[6], coolantDt: +c[7], insul: +c[8], comm: +c[9], fire: +c[10], door: +c[11] });
+    }
+    return rows;
+  }
+
+  function loadCSV(file) {
+    var st = document.getElementById('csvState');
+    if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      var rows = parseCSV(String(fr.result || ''));
+      if (rows.length < 24) { if (st) st.textContent = '行数不够，没载入（至少 24 行）。'; return; }
+      ROWS = rows; TOTAL = rows.length; EVENTS = judge(ROWS); cur = 8;
+      render();
+      if (st) st.textContent = '已载入 ' + rows.length + ' 行 · 重算 ' + EVENTS.length + ' 条 · ' + file.name;
+    };
+    fr.readAsText(file, 'utf-8');
+  }
+
+  function render() {
+    renderHead(); renderSoc(); renderPoints(); renderTags(); renderVerdict();
+    renderEvidence();
+    renderTrace(timer ? 'fast' : 'full');
+    renderDayChart(); renderMonth(); renderTimeline(); renderEvents(); renderMsg();
+  }
+  function goTo(t) { cur = Math.max(0, Math.min(TOTAL - 1, t)); render(); }
+
+  function tick() { if (cur >= TOTAL - 1) { pause(); return; } cur++; render(); }
+  function play() {
+    if (timer) return;
+    var b = document.getElementById('btnPlay');
+    b.textContent = '❚❚ 暂停'; b.style.color = '#d6f6ff';
+    timer = setInterval(tick, INTERVALS[speedIdx]);
+  }
+  function pause() {
+    if (timer) { clearInterval(timer); timer = null; }
+    var b = document.getElementById('btnPlay');
+    b.textContent = '▶ 播放 30 天'; b.style.color = '';
+  }
+  function reset() { pause(); cur = 8; render(); }
+
+  function renderTimeline() {
+    var html = '', d = row().day;
+    for (var i = 1; i <= DAYS; i++) {
+      var lv = 0, cnt = 0;
+      for (var j = 0; j < EVENTS.length; j++) {
+        if (EVENTS[j].day === i) {
+          cnt++;
+          if (EVENTS[j].level === 'alert') lv = 2;
+          else if (EVENTS[j].level === 'trend' && lv < 1) lv = 1;
+        }
+      }
+      html += '<div class="tlc' + (lv === 2 ? ' hasa' : (lv === 1 ? ' has' : '')) + (i === d ? ' cur' : '')
+        + '" data-day="' + i + '" title="第 ' + i + ' 天 · ' + cnt + ' 条"></div>';
+    }
+    var tl = document.getElementById('timeline');
+    tl.innerHTML = html;
+    var cells = tl.querySelectorAll('.tlc');
+    for (var q = 0; q < cells.length; q++) {
+      cells[q].onclick = (function (day) { return function () { pause(); goTo((day - 1) * 24 + 8); }; })(+cells[q].getAttribute('data-day'));
+    }
+    document.getElementById('stripRt').textContent = '已判 ' + eventsUpTo(cur).length + ' 条 · 合成数据';
+  }
+
+  var ICON = { alert: '!', trend: '↑', gap: '…', suspect: '?', recover: '✓' };
+
+  function renderEvents() {
+    var evs = eventsUpTo(cur).slice().reverse();
+    document.getElementById('feedCnt').textContent = evs.length + ' 条';
+    var box = document.getElementById('events');
+    if (!evs.length) {
+      box.innerHTML = '<div class="alarm suspect"><span class="ac">·</span><div class="ab"><b>还没查到事</b><small>点播放让它跑起来</small></div></div>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < evs.length && i < 80; i++) {
+      var e = evs[i];
+      var sign = (e.level !== 'gap' && e.level !== 'suspect' && e.t + 1 <= cur) ? ' · 已审 值班 李' : '';
+      html += '<div class="alarm ' + e.level + '"><span class="ac">' + ICON[e.level] + '</span>'
+        + '<div class="ab"><b>' + e.title + '</b><small>' + e.who + sign + '</small></div>'
+        + '<time>' + fmt(e.day, e.hour) + '</time></div>';
+    }
+    box.innerHTML = html;
+  }
+
+  function boot() {
+    document.getElementById('btnPlay').onclick = function () { if (timer) pause(); else play(); };
+    document.getElementById('btnStep').onclick = function () { pause(); tick(); };
+    document.getElementById('btnReset').onclick = reset;
+    document.getElementById('spd').onclick = function () {
+      speedIdx = (speedIdx + 1) % SPEEDS.length;
+      this.textContent = SPEEDS[speedIdx] + '×';
+      if (timer) { clearInterval(timer); timer = null; play(); }
+    };
+    function sign(label, btn) {
+      var n = eventsUpTo(cur).length;
+      document.getElementById('ownerAt').textContent = label + ' · 第 ' + n + ' 条已签';
+      if (btn) btn.style.color = '#7df0d4';
+    }
+    document.getElementById('actGo').onclick = function () { sign('已下达', this); };
+    document.getElementById('actHold').onclick = function () { sign('已挂起', this); };
+    document.getElementById('actNo').onclick = function () { sign('继续盯', this); };
+
+    document.getElementById('tabTpl').onclick = function () { msgMode = 'tpl'; renderMsg(); };
+    document.getElementById('tabModel').onclick = function () { msgMode = 'model'; renderMsg(); };
+
+    try {
+      var saved = JSON.parse(localStorage.getItem('yt_pilot_cfg') || '{}');
+      if (saved.base) cfg.base = saved.base;
+      if (saved.model) cfg.model = saved.model;
+    } catch (e) { }
+    document.getElementById('cfgBase').value = cfg.base;
+    document.getElementById('cfgModel').value = cfg.model;
+    document.getElementById('cfgState').textContent = cfg.base ? '已配置 · ' + cfg.model : '未配置 → 用规则模板出话';
+
+    document.getElementById('cfgSave').onclick = function () {
+      cfg.base = document.getElementById('cfgBase').value.trim();
+      cfg.model = document.getElementById('cfgModel').value.trim();
+      try { localStorage.setItem('yt_pilot_cfg', JSON.stringify(cfg)); } catch (e) { }
+      document.getElementById('cfgState').textContent = cfg.base ? '已配置 · ' + cfg.model : '未配置 → 规则模板';
+      renderMsg();
+    };
+
+    var mh = '';
+    for (var i = 0; i < POINTS.length; i++) {
+      mh += '<tr><td>' + POINTS[i].n + '</td><td>' + POINTS[i].reg + '</td><td>' + POINTS[i].src + '</td></tr>';
+    }
+    document.getElementById('mapTable').innerHTML = mh;
+
+    var csvEl = document.getElementById('csvFile');
+    if (csvEl) csvEl.onchange = function () { loadCSV(this.files && this.files[0]); };
+
+    loadCalc();
+    for (var k = 0; k < CALC_IDS.length; k++) {
+      var inp = document.getElementById(CALC_IDS[k]);
+      if (inp) inp.oninput = function () { calc(); saveCalc(); };
+    }
+    calc();
+    buildTrace();
+    render();
+
+    window.YT_PILOT = {
+      goTo: goTo, play: play, pause: pause, reset: reset,
+      state: function () { return { step: cur, day: row().day, hour: row().h, level: liveLevel() }; },
+      events: function () { return eventsUpTo(cur); },
+      allEvents: function () { return EVENTS; },
+      rows: function () { return ROWS; },
+      think: function () { return thinkData(); },
+      calc: function () { return document.getElementById('calcOut').textContent; },
+      loadRows: function (rows) { ROWS = rows; TOTAL = rows.length; EVENTS = judge(ROWS); cur = 8; render(); return EVENTS.length; },
+      replay: function () { renderTrace('full'); }
+    };
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+})();
+
+</script>
+
+
+
+<script>
+(function(){
+  var pill=document.getElementById('statePill'),ks=document.getElementById('kState');
+  if(!pill||!ks)return;
+  function sync(){
+    var t=(pill.textContent||'').trim();
+    var c=pill.className.replace('live','').trim();
+    ks.textContent=t;
+    ks.style.color=c==='bad'?'#E5403A':c==='warn'?'#E8890C':c==='gap'?'#2A5CA6':'#12A05C';
+  }
+  try{new MutationObserver(sync).observe(pill,{attributes:true,childList:true,subtree:true,characterData:true})}catch(e){}
+  sync();
+})();
+</script>
+</body>
+</html>

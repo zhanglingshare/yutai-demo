@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>这台柜的数据 · 30 天 720 点</title>
+<style>
+:root{
+  --blue:#0A59F7; --green:#12A05C; --orange:#E8890C; --red:#E5403A;
+  --ink:#0F1724; --ink2:#5A6675; --ink3:#8A96A6;
+  --line:#E4E9F0; --line2:#EFF3F8; --bg:#EDF1F7;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:24px 0 32px;color:var(--ink);
+  background:radial-gradient(1100px 460px at 12% -12%,#DCE8FF 0,transparent 62%),
+    radial-gradient(900px 420px at 92% -8%,#EADCFC 0,transparent 60%),var(--bg);
+  font-size:13px}
+.page{max-width:1560px;margin:0 auto;padding:0 24px}
+.head{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.head h1{margin:0;font-size:27px;font-weight:600;letter-spacing:-.5px}
+.head .stamp{margin-left:auto;text-align:right;font-size:9.5px;color:var(--ink3);line-height:1.7}
+.head .sub{width:100%;font-size:11.5px;color:var(--ink2);margin-top:7px}
+.head .sub b{color:var(--ink);font-weight:600}
+a.back{display:inline-block;font-size:10px;color:var(--ink3);text-decoration:none;margin-bottom:8px}
+
+.panel{background:rgba(255,255,255,.9);border-radius:18px;padding:14px 16px 12px;
+  border:1px solid rgba(255,255,255,.95);
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 30px rgba(16,40,80,.07);
+  backdrop-filter:blur(20px) saturate(1.7);-webkit-backdrop-filter:blur(20px) saturate(1.7);
+  margin-bottom:11px;display:flex;flex-direction:column}
+.ph{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.ph b{font-size:12px;font-weight:600}
+.ph span{font-size:9.5px;color:var(--ink3);margin-left:auto}
+
+.row8{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sp{background:#F8FBFE;border:1px solid #EDF2F9;border-radius:11px;padding:8px 10px 6px}
+.sp.hit{background:#FFFAF9;border-color:#F3DAD7}
+.sp .sph{display:flex;justify-content:space-between;align-items:baseline}
+.sp .sph span{font-size:10px;color:var(--ink2)}
+.sp .sph b{font-size:11.5px;font-variant-numeric:tabular-nums;font-weight:600}
+.sp.hit .sph b{color:var(--red)}
+.sp svg{width:100%;height:56px;display:block;margin-top:4px}
+
+.row2{display:grid;grid-template-columns:1fr 1.45fr;gap:11px}
+.row3{display:grid;grid-template-columns:1.5fr 1fr .92fr;gap:11px}
+.chart{width:100%;display:block}
+.legend{display:flex;gap:11px;font-size:9px;color:var(--ink3);margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:0}
+
+@media(max-width:900px){
+  body{padding:14px 0 22px}
+  .page{padding:0 12px}
+  .head h1{font-size:20px}
+  .head .stamp{display:none}
+  .row8{grid-template-columns:repeat(2,1fr);gap:8px}
+  .sp .sph{flex-wrap:wrap;gap:2px}
+  .sp .sph span{white-space:normal}
+  .sp svg{height:44px}
+  .row2,.row3{grid-template-columns:1fr;gap:12px}
+  .ph{flex-wrap:wrap}
+  .ph span{width:100%;margin-left:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="unit.html">← 回判断台</a>
+  <div class="head">
+    <h1>这台柜的数据</h1>
+    <div class="stamp">UT-ESS-03 · 惠州仲恺站 · 215kWh 液冷<br>30 天 × 24 小时 = 720 点 · 合成数据</div>
+    <div class="sub">同一份 720 点，换 <b>六种画法</b>看：趋势、相关、密度、构成、分布、占比。<b>每张图回答的问题都不一样</b>，没有一张是装饰。</div>
+  </div>
+
+  <section class="panel">
+    <div class="ph"><b>① 折线 · 八路各自怎么走</b><span>每天 12:00 一个点 · 红线 = 越过告警阈值</span></div>
+    <div class="row8" id="row8"></div>
+  </section>
+
+  <section class="panel">
+    <div class="ph"><b>② 散点 · 压差和舱温是不是一起动</b><span>720 个点 · 横轴舱温，纵轴压差</span></div>
+    <div class="row2">
+      <div><div id="scatter"></div>
+        <div class="legend"><span><i style="background:#B9CFE4"></i>正常</span>
+          <span><i style="background:#E8890C"></i>注意</span>
+          <span><i style="background:#E5403A"></i>越线</span>
+          <span><i style="background:#8FB2D3"></i>趋势线（正常段的线性拟合）</span></div>
+      </div>
+      <div><div class="ph" style="margin:0 0 4px"><b>③ 热力 · 30 天 × 24 小时</b><span>每格 = 当时判成什么</span></div>
+        <div id="heat"></div>
+        <div class="legend"><span><i style="background:#DCEBFA"></i>正常</span>
+          <span><i style="background:#F2C185"></i>注意</span><span><i style="background:#E5403A"></i>告警</span>
+          <span><i style="background:#9AA7B6"></i>断供</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="ph"><b>④ 面积 · 三天里什么时候在充、什么时候在放</b><span>D7–D9 · 逐小时 · 上=充 下=放</span></div>
+    <div class="row3">
+      <div><div id="area"></div></div>
+      <div><div class="ph" style="margin:0 0 4px"><b>⑤ 箱线 · 30 天压差分布</b><span>看离群</span></div>
+        <div id="box"></div></div>
+      <div><div class="ph" style="margin:0 0 4px"><b>⑥ 环形 · 720 点都判成什么</b><span>占比</span></div>
+        <div id="donut"></div></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var DAYS = 30, TOTAL = DAYS * 24;
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var RND = mulberry32(20261201);
+  function nz(a) { return (RND() * 2 - 1) * a; }
+
+  var rows = [], soc = 72;
+  for (var i = 0; i < TOTAL; i++) {
+    var day = Math.floor(i / 24) + 1, h = i % 24, cur = 0;
+    if (h >= 9 && h <= 15) cur = 0.46 * Math.sin(Math.PI * ((h - 9) / 6));
+    else if (h >= 18 && h <= 22) cur = -0.38 * Math.sin(Math.PI * ((h - 18) / 4));
+    if (day === 27 && h >= 12 && h <= 14) cur += (h === 14 ? 0.16 : 0.06);
+    soc += cur * 31 + nz(0.5);
+    soc = Math.max(16, Math.min(96, soc));
+    var gapInj = 0;
+    if (day === 8 && h >= 9) gapInj = 30;
+    if (day === 9) gapInj = 62;
+    if (day === 10) gapInj = 40;
+    if (day === 11) gapInj = 12;
+    var cellGap = 25 + 0.24 * (soc - 50) + 0.62 * (day - 1) + 1.1 * Math.abs(cur) + gapInj + nz(2.2);
+    var cabinInj = 0;
+    if (day === 22 && h === 14) cabinInj = 6.0;
+    if (day === 22 && h === 15) cabinInj = 7.4;
+    var cabinT = 25.5 + 2.3 * (Math.abs(cur) / 0.46) + 0.4 * Math.sin((h - 8) / 24 * 6.283)
+      + 0.02 * (day - 1) + cabinInj + nz(0.3);
+    var coolantDt = 3.2 + 0.9 * (Math.abs(cur) / 0.46) + nz(0.25);
+    var insul = 1180 + nz(45);
+    if (day === 18 && h === 10) insul = 470;
+    var comm = 1;
+    if (day === 15 && (h === 10 || h === 11)) comm = 0;
+    rows.push({ day: day, h: h, cur: cur, soc: soc, cellGap: cellGap, cabinT: cabinT,
+      coolantDt: coolantDt, insul: insul, comm: comm, fire: 0, door: (h >= 9 && h < 10) ? 1 : 0 });
+  }
+
+  function el(id) { return document.getElementById(id); }
+  function lv(r) {
+    if (r.comm === 0) return 'gap';
+    if (r.cellGap >= 80 || r.insul <= 800 || r.cabinT >= 33) return 'bad';
+    if (r.cellGap >= 60 || r.cabinT >= 30) return 'warn';
+    return 'ok';
+  }
+
+  /* ---------- ① 折线 ---------- */
+  var SERIES = [
+    { k: 'cellGap', n: '单体压差', u: 'mV', lo: 0, hi: 120, th: function (v) { return v >= 80; } },
+    { k: 'cabinT', n: '舱内温度', u: '℃', lo: 20, hi: 36, th: function (v) { return v >= 33; } },
+    { k: 'coolantDt', n: '液冷温差', u: '℃', lo: 0, hi: 8, th: function (v) { return v >= 5; } },
+    { k: 'cur', n: '充放电流', u: 'C', lo: 0, hi: 0.7, th: function (v) { return v >= 0.58; } },
+    { k: 'soc', n: '电量', u: '%', lo: 0, hi: 100, th: function (v) { return v <= 22; } },
+    { k: 'insul', n: '绝缘电阻', u: 'kΩ', lo: 0, hi: 1500, th: function (v) { return v <= 800; } },
+    { k: 'comm', n: '通讯', u: '', lo: -0.1, hi: 1.1, th: function (v) { return v === 0; }, step: true },
+    { k: 'fire', n: '消防干接点', u: '', lo: -0.1, hi: 1.1, th: function (v) { return v === 1; }, step: true }
+  ];
+
+  function sample(S, d) {
+    if (S.k === 'cur') {
+      var m = 0;
+      for (var h = 0; h < 24; h++) { var c = Math.abs(rows[d * 24 + h].cur); if (c > m) m = c; }
+      return m;
+    }
+    if (S.k === 'fire') {
+      var fired = 0;
+      for (var h2 = 0; h2 < 24; h2++) if (rows[d * 24 + h2].fire) fired = 1;
+      return fired;
+    }
+    if (S.k === 'comm') {
+      var cut = 0;
+      for (var h3 = 0; h3 < 24; h3++) if (rows[d * 24 + h3].comm === 0) cut = 1;
+      return cut ? 0 : 1;
+    }
+    if (S.k === 'cabinT' || S.k === 'cellGap') {
+      var mxv = -Infinity;
+      for (var h4 = 0; h4 < 24; h4++) { var vv = rows[d * 24 + h4][S.k]; if (vv > mxv) mxv = vv; }
+      return mxv;
+    }
+    return rows[d * 24 + 12][S.k];
+  }
+
+  function drawLine() {
+    var html = '';
+    for (var s = 0; s < SERIES.length; s++) {
+      var S = SERIES[s], pts = [], hit = false, mn = Infinity, mx = -Infinity;
+      for (var d = 0; d < DAYS; d++) {
+        var v = sample(S, d);
+        pts.push(v);
+        if (mn > v) mn = v; if (mx < v) mx = v;
+        if (S.th(v)) hit = true;
+      }
+      var W = 340, H = 56, PL = 6, PR = 6, PT = 10, PB = 8;
+      var X = function (i) { return PL + i * ((W - PL - PR) / (DAYS - 1)); };
+      var Y = function (v) {
+        var r = (v - S.lo) / (S.hi - S.lo);
+        r = Math.max(0, Math.min(1, r));
+        return PT + (1 - r) * (H - PT - PB);
+      };
+      var path = '';
+      if (S.step) {
+        var prev = pts[0];
+        path = 'M' + X(0) + ',' + Y(pts[0]);
+        for (var q = 1; q < DAYS; q++) {
+          path += ' L' + X(q) + ',' + Y(prev) + ' L' + X(q) + ',' + Y(pts[q]);
+          prev = pts[q];
+        }
+      } else {
+        for (var q2 = 0; q2 < DAYS; q2++) path += (q2 ? ' L' : 'M') + X(q2) + ',' + Y(pts[q2]);
+      }
+      var dots = '';
+      for (var q3 = 0; q3 < DAYS; q3++) {
+        if (S.th(pts[q3])) dots += '<circle cx="' + X(q3) + '" cy="' + Y(pts[q3]) + '" r="3" fill="#E5403A"/>';
+      }
+      var nowV = sample(S, DAYS - 1);
+      var lab = S.step ? (nowV ? '通' : '断') : (Math.abs(nowV) >= 100 ? Math.round(nowV) : nowV.toFixed(1));
+      html += '<div class="sp' + (hit ? ' hit' : '') + '">'
+        + '<div class="sph"><span>' + S.n + '</span><b>' + lab + (S.u ? ' ' + S.u : '') + '</b></div>'
+        + '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">'
+        + '<path d="' + path + '" fill="none" stroke="' + (hit ? '#E5A4A0' : '#8FB2D3')
+        + '" stroke-width="1.2" stroke-linejoin="round"/>' + dots + '</svg></div>';
+    }
+    el('row8').innerHTML = html;
+  }
+
+  /* ---------- ② 散点 ---------- */
+  function drawScatter() {
+    var W = 640, H = 300, PL = 46, PR = 14, PT = 12, PB = 30;
+    var minT = 24, maxT = 35, minG = 15, maxG = 115;
+    var X = function (t) { return PL + (t - minT) / (maxT - minT) * (W - PL - PR); };
+    var Y = function (g) { return PT + (1 - (g - minG) / (maxG - minG)) * (H - PT - PB); };
+
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">';
+    // 网格
+    for (var g = 20; g <= 100; g += 20) {
+      s += '<line x1="' + PL + '" y1="' + Y(g) + '" x2="' + (W - PR) + '" y2="' + Y(g) + '" stroke="#EFF3F8"/>'
+        + '<text x="' + (PL - 6) + '" y="' + (Y(g) + 3) + '" font-size="8" fill="#AEBBC9" text-anchor="end">' + g + '</text>';
+    }
+    for (var t = 24; t <= 34; t += 2) {
+      s += '<line x1="' + X(t) + '" y1="' + PT + '" x2="' + X(t) + '" y2="' + (H - PB) + '" stroke="#F4F7FB"/>'
+        + '<text x="' + X(t) + '" y="' + (H - PB + 12) + '" font-size="8" fill="#AEBBC9" text-anchor="middle">' + t + '℃</text>';
+    }
+    s += '<line x1="' + PL + '" y1="' + Y(80) + '" x2="' + (W - PR) + '" y2="' + Y(80) + '" stroke="#E8B0AC" stroke-dasharray="3 3"/>'
+      + '<text x="' + (W - PR - 2) + '" y="' + (Y(80) - 4) + '" font-size="8" fill="#C0392B" text-anchor="end">80mV 告警线</text>';
+
+    // 回归线（只用正常点）
+    var okPts = rows.filter(function (r) { return lv(r) === 'ok'; });
+    var mx = 0, my = 0;
+    okPts.forEach(function (r) { mx += r.cabinT; my += r.cellGap; });
+    mx /= okPts.length; my /= okPts.length;
+    var sxy = 0, sxx = 0;
+    okPts.forEach(function (r) { sxy += (r.cabinT - mx) * (r.cellGap - my); sxx += (r.cabinT - mx) * (r.cabinT - mx); });
+    var b = sxy / sxx, a = my - b * mx;
+
+    // 点
+    var dots = '';
+    for (var i2 = 0; i2 < rows.length; i2++) {
+      var r = rows[i2], l = lv(r);
+      var col = l === 'bad' ? '#E5403A' : (l === 'warn' ? '#E8890C' : (l === 'gap' ? '#9AA7B6' : '#B9CFE4'));
+      var rad = l === 'bad' ? 2.4 : 1.8;
+      dots += '<circle cx="' + X(r.cabinT).toFixed(1) + '" cy="' + Y(r.cellGap).toFixed(1)
+        + '" r="' + rad + '" fill="' + col + '" opacity="' + (l === 'ok' ? .55 : .95) + '"/>';
+    }
+    s += '<line x1="' + X(24) + '" y1="' + Y(a + b * 24) + '" x2="' + X(34) + '" y2="' + Y(a + b * 34) + '" stroke="#8FB2D3" stroke-width="1.6"/>';
+    s += dots;
+
+    // 标注 D9 与 D22
+    var d9 = rows[(9 - 1) * 24 + 12], d22 = rows[(22 - 1) * 24 + 14];
+    s += '<text x="' + X(d9.cabinT) + '" y="' + (Y(d9.cellGap) - 9) + '" font-size="8.5" fill="#C0392B" text-anchor="middle">D9 压差飞了</text>';
+    s += '<text x="' + X(d22.cabinT) + '" y="' + (Y(d22.cellGap) + 14) + '" font-size="8.5" fill="#B07A34" text-anchor="middle">D22 温度飞了</text>';
+    s += '<text x="' + (PL + 4) + '" y="' + (PT + 10) + '" font-size="8.5" fill="#8A96A6">压差 mV</text>';
+    s += '</svg>';
+    el('scatter').innerHTML = s;
+  }
+
+  /* ---------- ③ 热力 ---------- */
+  function drawHeat() {
+    var W = 900, H = 250, PL = 24, PT = 10, PB = 18, PR = 6;
+    var cw = (W - PL - PR) / DAYS, chh = (H - PT - PB) / 24;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">';
+    for (var d = 0; d < DAYS; d++) {
+      for (var h = 0; h < 24; h++) {
+        var r = rows[d * 24 + h], L = lv(r);
+        var fill = L === 'bad' ? '#E5403A' : (L === 'warn' ? '#F2C185' : (L === 'gap' ? '#9AA7B6' : '#DCEBFA'));
+        s += '<rect x="' + (PL + d * cw).toFixed(1) + '" y="' + (PT + (23 - h) * chh).toFixed(1)
+          + '" width="' + (cw - 1).toFixed(1) + '" height="' + (chh - 1).toFixed(1)
+          + '" fill="' + fill + '" rx="1"/>';
+      }
+    }
+    for (var t = 0; t < DAYS; t += 5) {
+      s += '<text x="' + (PL + t * cw + cw / 2) + '" y="' + (H - 6) + '" font-size="7.5" fill="#AEBBC9" text-anchor="middle">D' + (t + 1) + '</text>';
+    }
+    [22, 27].forEach(function (dd) {
+      s += '<text x="' + (PL + (dd - 1) * cw + cw / 2) + '" y="' + (PT - 1) + '" font-size="7" fill="#B07A34" text-anchor="middle">D' + dd + '</text>';
+    });
+    ['0', '6', '12', '18'].forEach(function (hh) {
+      s += '<text x="' + (PL - 5) + '" y="' + (PT + (23 - +hh) * chh + chh / 2 + 3) + '" font-size="7.5" fill="#AEBBC9" text-anchor="end">' + hh + '</text>';
+    });
+    s += '</svg>';
+    el('heat').innerHTML = s;
+  }
+
+  /* ---------- ④ 面积 ---------- */
+  function drawArea() {
+    var W = 640, H = 170, PL = 30, PR = 10, PT = 10, PB = 18;
+    var FROM = 6 * 24, SPAN = 72;                 // D7–D9
+    var X = function (i) { return PL + (i - FROM) / (SPAN - 1) * (W - PL - PR); };
+    var zero = PT + (H - PT - PB) / 2;
+    var amp = (H - PT - PB) / 2 / 0.62;
+    var up = '', posSeg = [], negSeg = [], curSeg = null;
+    for (var i2 = FROM; i2 < FROM + SPAN; i2++) {
+      var y = zero - rows[i2].cur * amp;
+      up += (i2 === FROM ? 'M' : ' L') + X(i2).toFixed(1) + ',' + y.toFixed(1);
+      var positive = rows[i2].cur > 0;
+      var key = positive ? 'p' : 'n';
+      if (!curSeg || curSeg.key !== key) {
+        curSeg = { key: key, d: '' };
+        (positive ? posSeg : negSeg).push(curSeg);
+      }
+      curSeg.d += (curSeg.d ? ' L' : 'M') + X(i2).toFixed(1) + ',' + y.toFixed(1);
+    }
+    var posPath = '', negPath = '';
+    posSeg.forEach(function (g2) {
+      var x1 = g2.d.split(' ')[0].split(',')[0].slice(1), x2 = g2.d.split(' L').pop().split(',')[0];
+      posPath += g2.d + ' L' + x2 + ',' + zero + ' L' + x1 + ',' + zero + ' Z';
+    });
+    negSeg.forEach(function (g3) {
+      var x1b = g3.d.split(' ')[0].split(',')[0].slice(1), x2b = g3.d.split(' L').pop().split(',')[0];
+      negPath += g3.d + ' L' + x2b + ',' + zero + ' L' + x1b + ',' + zero + ' Z';
+    });
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">';
+    s += '<rect x="' + PL + '" y="' + PT + '" width="' + (W - PL - PR) + '" height="' + (zero - PT) + '" fill="#F2F8FF"/>';
+    s += '<rect x="' + PL + '" y="' + zero + '" width="' + (W - PL - PR) + '" height="' + (H - PB - zero) + '" fill="#FFF8F2"/>';
+    s += '<path d="' + posPath + '" fill="#0A59F7" opacity=".16"/>';
+    s += '<path d="' + negPath + '" fill="#E8890C" opacity=".16"/>';
+    s += '<path d="' + up + '" fill="none" stroke="#0A59F7" stroke-width="1.1" opacity=".85"/>';
+    s += '<line x1="' + PL + '" y1="' + zero + '" x2="' + (W - PR) + '" y2="' + zero + '" stroke="#C9D6E4"/>';
+    s += '<text x="' + (PL - 6) + '" y="' + (PT + 6) + '" font-size="8" fill="#8FB2D3" text-anchor="end">充</text>';
+    s += '<text x="' + (PL - 6) + '" y="' + (H - PB) + '" font-size="8" fill="#E0A567" text-anchor="end">放</text>';
+    for (var d = 0; d < 3; d++) {
+      s += '<text x="' + X(FROM + d * 24 + 11) + '" y="' + (H - 4) + '" font-size="7.5" fill="#AEBBC9" text-anchor="middle">D' + (7 + d) + '</text>';
+    }
+    s += '<line x1="' + X((9 - 1) * 24) + '" y1="' + PT + '" x2="' + X((9 - 1) * 24) + '" y2="' + (H - PB) + '" stroke="#E5403A" stroke-dasharray="2 3" opacity=".6"/>'
+      + '<text x="' + (X((9 - 1) * 24) + 4) + '" y="' + (PT + 12) + '" font-size="7.5" fill="#C0392B">D9 起</text>';
+    s += '</svg>';
+    el('area').innerHTML = s;
+  }
+
+  /* ---------- ⑤ 箱线 ---------- */
+  function drawBox() {
+    var vals = [];
+    for (var d = 0; d < DAYS; d++) {
+      var m = 0;
+      for (var h = 0; h < 24; h++) m = Math.max(m, rows[d * 24 + h].cellGap);
+      vals.push(m);
+    }
+    vals.sort(function (a, b) { return a - b; });
+    var qf = function (p) { var i = (vals.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return vals[lo] + (vals[hi] - vals[lo]) * (i - lo); };
+    var mn = vals[0], mx = vals[vals.length - 1], q1 = qf(.25), med = qf(.5), q3 = qf(.75);
+    var iqr = q3 - q1, fence = q3 + 1.5 * iqr;
+
+    var W = 420, H = 200, PL = 18, PR = 14, PT = 16, PB = 26;
+    var maxV = 115, X = function (v) { return PL + v / maxV * (W - PL - PR); };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="chart">';
+    var cy = 92, bh = 34;
+    s += '<line x1="' + X(q1) + '" y1="' + (cy - bh / 2) + '" x2="' + X(mn) + '" y2="' + (cy - bh / 2) + '" stroke="#B9CFE4" stroke-width="1"/>';
+    s += '<line x1="' + X(q3) + '" y1="' + (cy - bh / 2) + '" x2="' + X(mx) + '" y2="' + (cy - bh / 2) + '" stroke="#B9CFE4" stroke-width="1"/>';
+    s += '<line x1="' + X(mn) + '" y1="' + (cy - bh / 2 - 6) + '" x2="' + X(mn) + '" y2="' + (cy - bh / 2 + 6) + '" stroke="#B9CFE4"/>';
+    s += '<line x1="' + X(mx) + '" y1="' + (cy - bh / 2 - 6) + '" x2="' + X(mx) + '" y2="' + (cy - bh / 2 + 6) + '" stroke="#B9CFE4"/>';
+    s += '<rect x="' + X(q1) + '" y="' + (cy - bh / 2) + '" width="' + (X(q3) - X(q1)) + '" height="' + bh + '" fill="#DCEBFA" stroke="#93B4D4"/>';
+    s += '<line x1="' + X(med) + '" y1="' + (cy - bh / 2) + '" x2="' + X(med) + '" y2="' + (cy + bh / 2) + '" stroke="#0A59F7" stroke-width="1.8"/>';
+    s += '<text x="' + X(med) + '" y="' + (cy + bh / 2 + 13) + '" font-size="8.5" fill="#0A59F7" text-anchor="middle">中位 ' + med.toFixed(0) + '</text>';
+    s += '<text x="' + X(q1) + '" y="' + (cy - bh / 2 - 8) + '" font-size="7.5" fill="#8A96A6" text-anchor="middle">' + q1.toFixed(0) + '</text>';
+    s += '<text x="' + X(q3) + '" y="' + (cy - bh / 2 - 8) + '" font-size="7.5" fill="#8A96A6" text-anchor="middle">' + q3.toFixed(0) + '</text>';
+    s += '<text x="' + X(mn) + '" y="' + (cy - bh / 2 - 8) + '" font-size="7.5" fill="#AEBBC9" text-anchor="middle">' + mn.toFixed(0) + '</text>';
+    s += '<text x="' + X(mx) + '" y="' + (cy - bh / 2 - 8) + '" font-size="7.5" fill="#AEBBC9" text-anchor="middle">' + mx.toFixed(0) + '</text>';
+    // 离群点
+    var outs = vals.filter(function (v) { return v > fence; });
+    for (var o = 0; o < outs.length; o++) {
+      s += '<circle cx="' + X(outs[o]) + '" cy="' + (cy + 64) + '" r="4" fill="#E5403A" opacity=".9"/>';
+    }
+    if (outs.length) s += '<text x="' + X(outs[outs.length - 1]) + '" y="' + (cy + 84) + '" font-size="8.5" fill="#C0392B" text-anchor="end">' + outs.length + ' 天离群 · 最高 ' + mx.toFixed(0) + '</text>';
+    // 轴
+    for (var t = 0; t <= 100; t += 20) {
+      s += '<line x1="' + X(t) + '" y1="' + (H - PB) + '" x2="' + X(t) + '" y2="' + (H - PB + 3) + '" stroke="#DCE5F1"/>'
+        + '<text x="' + X(t) + '" y="' + (H - 8) + '" font-size="7.5" fill="#AEBBC9" text-anchor="middle">' + t + '</text>';
+    }
+    s += '</svg>';
+    el('box').innerHTML = s;
+  }
+
+  /* ---------- ⑥ 环形 ---------- */
+  function drawDonut() {
+    var c = { ok: 0, warn: 0, bad: 0, gap: 0 };
+    rows.forEach(function (r) { c[lv(r)]++; });
+    var tot = rows.length;
+    var parts = [
+      { k: 'ok', n: '正常', v: c.ok, col: '#12A05C' },
+      { k: 'warn', n: '注意', v: c.warn, col: '#E8890C' },
+      { k: 'bad', n: '告警', v: c.bad, col: '#E5403A' },
+      { k: 'gap', n: '断供', v: c.gap, col: '#9AA7B6' }
+    ];
+    var acc = 0, stops = [];
+    parts.forEach(function (p) {
+      var from = acc / tot * 100, to = (acc + p.v) / tot * 100;
+      stops.push({ col: p.col, from: from, to: to });
+      acc += p.v;
+    });
+    var grad = stops.map(function (s2) { return s2.col + ' ' + s2.from.toFixed(2) + '% ' + s2.to.toFixed(2) + '%'; }).join(',');
+    var s = '<div style="display:flex;align-items:center;gap:14px">'
+      + '<div style="width:118px;height:118px;border-radius:50%;flex:0 0 auto;background:conic-gradient(' + grad + ');position:relative">'
+      + '<div style="position:absolute;inset:26px;background:#fff;border-radius:50%;display:grid;place-items:center">'
+      + '<div style="text-align:center"><b style="font-size:20px;font-variant-numeric:tabular-nums">' + (100 - c.bad / tot * 100).toFixed(1) + '<small style="font-size:10px">%</small></b>'
+      + '<div style="font-size:8.5px;color:#8A96A6">不必停机</div></div></div></div>'
+      + '<div style="font-size:9.5px;color:#5A6675;line-height:2">';
+    parts.forEach(function (p) {
+      s += '<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' + p.col + ';margin-right:5px"></i>'
+        + p.n + ' <b style="float:right;font-variant-numeric:tabular-nums;color:#0F1724">'
+        + (p.v / tot * 100).toFixed(2) + '%</b></div>';
+    });
+    s += '</div></div>';
+    el('donut').innerHTML = s;
+  }
+
+  drawLine(); drawScatter(); drawHeat(); drawArea(); drawBox(); drawDonut();
+  window.YT_CHARTS = { rows: rows, redraw: function () { drawLine(); drawScatter(); drawHeat(); drawArea(); drawBox(); drawDonut(); } };
+})();
+</script>
+<div style="max-width:1000px;margin:0 auto;padding:0 16px 30px;text-align:center"><a href="dsh.html" style="font-size:12px;color:#0A59F7;font-weight:600">这套判断是怎么出来的 · 谁在判、谁在说 →</a></div>
+</body>
+</html>

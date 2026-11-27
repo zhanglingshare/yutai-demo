@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>这套判断是怎么出来的 · DSH</title>
+<style>
+:root{
+  --blue:#0A59F7;--blue2:#4B8BFF;--green:#12A05C;--orange:#E8890C;--red:#E5403A;
+  --violet:#6B4EF5;
+  --ink:#0F1724;--ink2:#5A6675;--ink3:#8A96A6;--line:#E4E9F0;--line2:#EFF3F8;--bg:#EDF1F7;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;min-width:320px;color:var(--ink);font-size:13px;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1100px 460px at 12% -12%,#DCE8FF 0,transparent 62%),
+    radial-gradient(900px 420px at 92% -8%,#EADCFC 0,transparent 60%),
+    var(--bg);}
+a{color:inherit;text-decoration:none}
+.page{max-width:1520px;margin:0 auto;padding:22px 26px 46px}
+.back{font-size:12px;color:var(--ink3);display:inline-block;margin-bottom:10px}
+h1{font-size:31px;letter-spacing:-.7px;margin:2px 0 8px;font-weight:600}
+.sub{color:var(--ink2);font-size:13.5px;line-height:1.75;max-width:800px;margin:0}
+.def{margin:13px 0 16px;padding:11px 16px;background:rgba(255,255,255,.72);border-left:3px solid var(--blue);
+  border-radius:0 12px 12px 0;font-size:13px;color:var(--ink2);line-height:1.75;max-width:940px;
+  box-shadow:0 2px 10px rgba(16,40,80,.04)}
+.def b{color:var(--ink);font-weight:600}
+.def .v{color:var(--violet);font-weight:600}
+
+.ctl{display:flex;align-items:center;gap:8px;margin:0 0 14px;flex-wrap:wrap}
+.ctl button{padding:7px 15px;border-radius:10px;background:#fff;font-size:12.5px;color:var(--ink2);
+  box-shadow:0 1px 3px rgba(16,24,40,.1),0 0 0 .5px rgba(16,24,40,.06);transition:.18s}
+.ctl button:hover{color:var(--ink)}
+.ctl button.act{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(10,89,247,.32)}
+.ctl button.warn{color:var(--red);box-shadow:0 0 0 1px #f3c9c6 inset}
+.ctl .sp{flex:1}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 314px;gap:16px;align-items:stretch}
+.scene{position:relative;background:linear-gradient(170deg,rgba(255,255,255,.94),rgba(246,250,255,.9));
+  border-radius:20px;overflow:hidden;box-shadow:0 14px 40px rgba(16,40,80,.09),0 0 0 1px rgba(150,170,200,.14) inset;
+  min-height:500px}
+#topo{display:block;width:100%;height:500px;cursor:grab}
+#topo:active{cursor:grabbing}
+.fl{position:absolute;left:0;top:0;pointer-events:none;background:rgba(255,255,255,.96);border-radius:11px;
+  padding:7px 11px;box-shadow:0 6px 20px rgba(16,40,80,.13);will-change:transform}
+.fl b{display:block;font-size:11.5px;font-weight:600;letter-spacing:.2px;white-space:nowrap}
+.fl span{display:block;font-size:10px;color:var(--ink3);margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fl:before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--blue)}
+.fl.v:before{background:var(--violet)}
+.hintbar{position:absolute;left:14px;bottom:12px;font-size:10px;color:var(--ink3);letter-spacing:.3px}
+.legend{position:absolute;right:14px;bottom:12px;display:flex;gap:12px;font-size:10px;color:var(--ink3)}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+
+.screen{display:flex;flex-direction:column}
+.cap{font-size:11px;color:var(--ink3);letter-spacing:.4px;margin-bottom:8px}
+.msg{background:linear-gradient(160deg,#1B2432,#111823);border-radius:18px;padding:16px 17px;color:#E9EEF6;
+  display:flex;flex-direction:column;flex:0 0 auto;min-height:258px;box-shadow:0 14px 34px rgba(10,18,32,.24)}
+.msg .mh{font-size:10px;color:#7E8CA3;letter-spacing:.5px;margin-bottom:10px;display:flex;gap:6px;align-items:center}
+.msg .mh .d{width:5px;height:5px;border-radius:50%;background:#43DAFA}
+.msg .txt{font-size:13.5px;line-height:1.72;color:#E9EEF6;min-height:104px;transition:.25s}
+.msg .txt.cut{opacity:.55;text-decoration:line-through;text-decoration-color:rgba(250,119,128,.6);text-decoration-thickness:1px}
+.msg .txt .num{color:#8FD8FF;font-weight:600;border-bottom:1px dashed #3E6A86;transition:.18s}
+.msg .txt .num.ok{border-bottom-color:#3FD79B;color:#8CF0C8}
+.msg .txt .num.bad{border-bottom-color:#FA7780;color:#FFA3A8;background:#FA77801A}
+.msg .src{margin-top:auto;border-top:1px solid #24313F;padding-top:10px;font-size:10.5px;color:#8296AC;line-height:1.6;
+  font-variant-numeric:tabular-nums}
+.msg .src b{color:#AFC3D6;font-weight:600}
+.rej{display:none;margin:8px 0 0;background:#3D1E20;border-radius:9px;padding:9px 11px;font-size:11px;color:#FFB3B7;line-height:1.65}
+.rej.show{display:block}
+.rej b{display:inline-block;background:#FA7780;color:#fff;font-size:9.5px;padding:1px 6px;border-radius:4px;margin-right:6px;font-weight:600}
+
+.evi{margin-top:12px;background:rgba(255,255,255,.9);border-radius:16px;padding:13px 15px;
+  box-shadow:0 8px 22px rgba(16,40,80,.06)}
+.evi .eh{font-size:10.5px;color:var(--ink3);letter-spacing:.4px;margin-bottom:9px}
+.evi .er{display:flex;gap:9px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line2);font-size:11px;color:var(--ink2)}
+.evi .er:first-of-type{border-top:0}
+.evi .er b{flex:0 0 34px;font-size:10px;font-weight:700;color:var(--blue);background:#EAF1FF;border-radius:4px;padding:2px 5px;text-align:center}
+.evi .er:last-child b{color:#8A96A6;background:#F1F4F8}
+
+/* 智能团队 */
+.team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin:12px 0 0}
+.tm{background:rgba(255,255,255,.82);border-radius:12px;padding:9px 11px;
+  box-shadow:0 0 0 1px rgba(150,170,200,.13) inset;transition:.3s}
+.tm b{display:block;font-size:11.5px;font-weight:600;letter-spacing:.2px}
+.tm span{display:block;font-size:9.5px;color:var(--ink3);margin-top:3px}
+.tm.on{background:#fff;box-shadow:0 0 0 1px #CFE0FA inset,0 5px 14px rgba(10,89,247,.10)}
+.tm.on span{color:var(--blue);font-weight:600}
+.tm.done span{color:var(--green);font-weight:600}
+
+.say{display:flex;gap:14px;align-items:flex-start;margin:14px 0 6px;background:rgba(255,255,255,.82);
+  border-radius:16px;padding:13px 18px;box-shadow:0 6px 20px rgba(16,40,80,.05)}
+.say .tag{flex:0 0 auto;font-size:11px;font-weight:600;color:#fff;background:var(--blue);border-radius:7px;padding:3px 9px;margin-top:3px}
+.say .tag.v{background:var(--violet)} .say .tag.r{background:var(--red)} .say .tag.g{background:var(--green)}
+.say p{margin:0;font-size:15.5px;line-height:1.6;letter-spacing:-.1px;min-height:25px}
+
+.tl{margin:18px 0 6px;background:rgba(255,255,255,.74);border-radius:16px;padding:14px 18px;box-shadow:0 6px 18px rgba(16,40,80,.05)}
+.tlhd{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink3);margin-bottom:10px}
+.tlrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tlc{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 15px;box-shadow:0 0 0 1px #E6EDF6 inset}
+.tlc b{font-size:32px;font-weight:600;letter-spacing:-1.4px;font-variant-numeric:tabular-nums;line-height:1}
+.tlc.b b{color:var(--blue)} .tlc.v b{color:var(--violet)}
+.tlc span{font-size:10.5px;color:var(--ink3);line-height:1.4}
+.tlc em{margin-left:auto;font-style:normal;font-size:11.5px;color:var(--ink2);text-align:right}
+.tlnote{margin:11px 0 0;font-size:11.5px;color:var(--ink2);line-height:1.7}
+
+.edges{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.edge{background:rgba(255,255,255,.86);border-radius:16px;padding:14px 16px;box-shadow:0 8px 22px rgba(16,40,80,.05)}
+.edge b{display:block;font-size:13px;margin-bottom:5px}
+.edge b em{font-style:normal;color:var(--red);font-size:10px;margin-left:6px;background:#FDE9E8;padding:2px 6px;border-radius:5px}
+.edge p{margin:0;font-size:11.5px;color:var(--ink2);line-height:1.7}
+.foot{text-align:center;font-size:10.5px;color:var(--ink3);margin-top:24px}
+
+@media(max-width:1180px){
+  .stage{grid-template-columns:1fr}
+  .screen{margin-top:2px}
+  .msg{min-height:0}
+}
+@media(max-width:760px){
+  .page{padding:16px 13px 34px}
+  h1{font-size:24px} .sub{font-size:12.5px}
+  #topo{height:360px} .scene{min-height:360px}
+  .legend{display:none}
+  .fl{display:none}
+  .say p{font-size:14px}
+  .edges{grid-template-columns:1fr}
+  .tlrow{grid-template-columns:1fr}
+  .ctl button{padding:6px 11px;font-size:11.5px}
+  #bReset{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="unit.html">← 回判断台</a>
+  <h1>这套判断是怎么出来的</h1>
+  <p class="sub">一台柜判正常、判告警、判“信号没上来先挂起”，都不是模型猜的。判断在匣子里由六个岗位接力做完，模型只负责把结果说成人话——而且说完还要被逐字核对一遍。</p>
+
+  <div class="def">
+    <b>DSH = DeepSeek Harness</b>，装在企业内网的一台机器上。壳负责“什么是真的”：接、存、判、门、记、发；它调用的 <span class="v">DeepSeek API 是内网私有部署</span>，只负责“怎么说成人话”。壳不依赖芯：把芯拔掉，判断照转。
+  </div>
+
+  <div class="ctl">
+    <button id="bPlay" class="act">▶ 播放一次</button>
+    <button id="bStep">单步 →</button>
+    <button id="bReset">重放</button>
+    <button id="bSpin">⟳ 停环绕</button>
+    <span class="sp"></span>
+    <button id="bBad">让它乱写一次</button>
+    <button id="bPull">拔掉芯（断模型）</button>
+  </div>
+
+  <div class="stage">
+    <div class="scene" id="scene">
+      <canvas id="topo"></canvas>
+      <div class="legend"><span><i style="background:#6E8FB4"></i>现场</span><span><i style="background:#0A59F7"></i>壳 · 工序</span><span><i style="background:#6B4EF5"></i>芯 · 内网 API</span><span><i style="background:#12A05C"></i>人</span><span><i style="background:#12A05C"></i>✓ 已交接</span></div>
+      <div class="fl" id="flCab"><b>UT-ESS-03</b><span id="flCabT">8 寄存器 · 只读</span></div>
+      <div class="fl v" id="flChip"><b>内网 DeepSeek</b><span id="flChipT">只收 5 个槽位</span></div>
+      <div class="hintbar">拖动可旋转 · 弧线上跑的是数据与调用</div>
+    </div>
+
+    <div class="screen">
+      <div class="cap">运维看到的</div>
+      <div class="msg" id="msg">
+        <div class="mh"><span class="d"></span><span id="mHead">这台柜 · 09:00</span></div>
+        <div class="txt" id="mTxt" style="color:#5A6A7E">等待判断…</div>
+        <div class="rej" id="rej"></div>
+        <div class="src" id="mSrc"></div>
+      </div>
+      <div class="evi">
+        <div class="eh">证据链 · 全部可回台账</div>
+        <div class="er"><b>R2</b><span>压差趋势 · 连续 3 天上升</span></div>
+        <div class="er"><b>R1</b><span>绝对值 102mV ＞ 阈值 80mV</span></div>
+        <div class="er"><b>R4</b><span>舱温 28.9℃ · 未越线</span></div>
+        <div class="er"><b>台账</b><span>#8621 · 12:00:00 · 哈希封口</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="team" id="team">
+    <div class="tm" id="tm1"><b>A1 · 接入员</b><span>待命</span></div>
+    <div class="tm" id="tm2"><b>A2 · 记账员</b><span>待命</span></div>
+    <div class="tm" id="tm3"><b>A3 · 判断员</b><span>待命</span></div>
+    <div class="tm" id="tm4"><b>A4 · 门卫</b><span>待命</span></div>
+    <div class="tm" id="tm5"><b>A5 · 留痕员</b><span>待命</span></div>
+    <div class="tm" id="tm6"><b>A6 · 发报员</b><span>待命</span></div>
+  </div>
+
+  <div class="say"><span class="tag" id="sayTag">现场</span><p id="sayTxt">8 个寄存器，2 秒一轮。只读，写不进——这是整套东西的地基。</p></div>
+
+  <div class="tl">
+    <div class="tlhd"><span>一次判断 + 一次措辞</span><span>合成演示 · 时长按内网实测量级标注</span></div>
+    <div class="tlrow">
+      <div class="tlc b"><b>8</b><span>ms<br>判断</span><em>壳完成。结论已定，规矩已留痕。</em></div>
+      <div class="tlc v"><b>182</b><span>ms<br>措辞</span><em>芯在选词。结论一个字都改不了。</em></div>
+    </div>
+    <p class="tlnote">结论只用了 4% 的时间。剩下 96% 花在“把它说成人话”——所以说错话，判断依然是对的。</p>
+  </div>
+
+  <div class="edges">
+    <div class="edge"><b>不给原始数据<em>边界一</em></b><p>芯拿到的是 5 个槽位，不是 720 点。它没有能力“自己看出”问题，只能把已经判出来的事说清楚。</p></div>
+    <div class="edge"><b>不判正常与否<em>边界二</em></b><p>“告警”这两个字出自 R2 规则，不出自模型。模型不知道阈值是多少，也不允许知道。</p></div>
+    <div class="edge"><b>不下命令<em>边界三</em></b><p>要停机、要派人，闸门在人这里。模型最多说“建议查一次”，按不按由值班的人决定。</p></div>
+  </div>
+
+  <p class="foot">点“让它乱写一次”，看校验怎么把模型编的数字退回去；点“拔掉芯”，看判断还在不在。</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+
+/* ---------- 3D 投影（透视 + 双轴旋转，与小宇同一套算法） ---------- */
+function P3(w,h,o){
+  o=o||{};
+  this.w=w;this.h=h;
+  this.yaw=o.yaw===undefined?-.18:o.yaw;
+  this.pitch=o.pitch===undefined?.22:o.pitch;
+  this.scale=o.scale===undefined?Math.min(w,h)*.115:o.scale;
+  this.dist=o.dist===undefined?14:o.dist;
+  this.cx=w*(o.cx===undefined?.5:o.cx);
+  this.cy=h*(o.cy===undefined?.56:o.cy);
+}
+P3.prototype.project=function(x,y,z){
+  var cy=Math.cos(this.yaw),sy=Math.sin(this.yaw);
+  var X=x*cy-z*sy,Z0=x*sy+z*cy;
+  var cp=Math.cos(this.pitch),sp=Math.sin(this.pitch);
+  var Y=y*cp-Z0*sp,Z=y*sp+Z0*cp;
+  var k=this.dist/Math.max(2,this.dist+Z);
+  return {x:this.cx+X*this.scale*k,y:this.cy+Y*this.scale*k,z:Z,k:k};
+};
+
+/* ---------- 节点 ---------- */
+var RGB={cab:[110,143,180],step:[10,89,247],chip:[107,78,245],man:[18,160,92]};
+var ORDER=['接入','记账','判断','门卫','留痕','发报'];
+var SUB=['A1','A2','A3','A4','A5','A6'];
+
+var NODES=[];
+NODES.push({id:'cab',label:'03 号柜',sub:'8 寄存器 · 只读',c:RGB.cab,x:-2.35,y:1.80,z:.40,r:16,noLabel:1});
+for(var i=0;i<6;i++){
+  NODES.push({id:'s'+(i+1),label:ORDER[i],sub:SUB[i],c:RGB.step,
+    x:-1.35+i*.78,y:.46+(i%2?.05:-.05),z:(i-2.5)*.16,r:14});
+}
+NODES.push({id:'chip',label:'内网 DeepSeek',sub:'只做措辞',c:RGB.chip,x:.95,y:-.62,z:-.15,r:14,small:1,noLabel:1});
+NODES.push({id:'man',label:'运维屏 / 人',sub:'只做决定',c:RGB.man,x:2.70,y:-1.55,z:-.45,r:14});
+
+var IDX={};NODES.forEach(function(n,i2){IDX[n.id]=i2});
+
+var EDGES=[
+  {a:IDX.cab,b:IDX.s1,w:1},
+  {a:IDX.s1,b:IDX.s2,w:1}, {a:IDX.s2,b:IDX.s3,w:2},
+  {a:IDX.s3,b:IDX.s4,w:3}, {a:IDX.s4,b:IDX.s5,w:4}, {a:IDX.s5,b:IDX.s6,w:5},
+  {a:IDX.s6,b:IDX.chip,w:1},
+  {a:IDX.chip,b:IDX.man,w:2}
+];
+var BYPASS={a:IDX.s3,b:IDX.man};
+
+var state={i:-1,timer:null,kick:null,pulled:false,bad:false,spin:true,base:-.18,pitch:.22};
+
+/* ---------- 画布 ---------- */
+var cv=$('topo'),ctx=cv.getContext('2d');
+var W=800,H=500,DPR=Math.min(2,window.devicePixelRatio||1);
+var parts=[];
+function sizeCanvas(){
+  var box=cv.getBoundingClientRect();
+  W=Math.max(320,box.width);H=box.height||500;
+  cv.width=W*DPR;cv.height=H*DPR;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize',sizeCanvas);
+
+for(var p=0;p<34;p++)parts.push({x:Math.random(),y:Math.random(),r:.7+Math.random()*1.2});
+
+function rgba(c,a){return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'}
+
+function ring(P,y,r,alpha,dash){
+  ctx.beginPath();
+  for(var a2=0;a2<=Math.PI*2+.02;a2+=Math.PI/40){
+    var q=P.project(Math.cos(a2)*r,y,Math.sin(a2)*r);
+    if(a2===0)ctx.moveTo(q.x,q.y);else ctx.lineTo(q.x,q.y);
+  }
+  ctx.setLineDash(dash||[]);
+  ctx.strokeStyle='rgba(120,140,175,'+alpha+')';ctx.lineWidth=1;ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function place(el,x,y,w,h){
+  var lw=el.offsetWidth||130;
+  var cx2=Math.max(6,Math.min(w-lw-6,x-lw/2));
+  var cy3=Math.max(6,Math.min(h-46,y));
+  el.style.transform='translate('+cx2+'px,'+cy3+'px)';
+}
+
+function flow(A,B,mx,my,sp,t){
+  var tt=((t/2400)*(sp||1)+ (sp||1)*.12)%1;
+  var q1=(1-tt)*(1-tt),q2=2*(1-tt)*tt,q3=tt*tt;
+  var x=q1*A.x+q2*mx+q3*B.x,y=q1*A.y+q2*my+q3*B.y;
+  ctx.beginPath();ctx.arc(x,y,2.4,0,6.29);
+  ctx.fillStyle='#2E7BFF';ctx.globalAlpha=.88;ctx.fill();ctx.globalAlpha=1;
+}
+
+function active(e){
+  var cur=state.i;
+  if(state.pulled&&(e.b===IDX.chip||e.b===IDX.man))return false;
+  if(e.a===IDX.cab)return cur>=1;
+  if(e.b===IDX.s2)return cur>=2;
+  if(e.b===IDX.s3)return cur>=3;
+  if(e.b===IDX.s4)return cur>=4;
+  if(e.b===IDX.s5)return cur>=5;
+  if(e.b===IDX.s6)return cur>=6;
+  if(e.b===IDX.chip)return cur>=7;
+  if(e.b===IDX.man)return cur>=10;
+  return false;
+}
+function nodeState(i3){
+  var n=NODES[i3],cur=state.i;
+  if(n.id==='cab')return {cur:cur>=0&&cur<1,done:cur>=1};
+  if(n.id==='chip'){
+    if(state.pulled)return {dim:true,cur:false};
+    return {cur:cur===7,done:cur>7};
+  }
+  if(n.id==='man')return {cur:cur>=10,done:false};
+  var k=+n.id.slice(1);
+  return {cur:cur===k,done:cur>k};
+}
+
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+  var yaw=state.base+(state.spin?Math.sin(t*.00042)*.16:0);
+  var P=new P3(W,H,{yaw:yaw,pitch:state.pitch,scale:Math.min(W,H)*(W<600?.138:.252),dist:13,cy:.50,cx:W<600?.43:.5});
+
+  parts.forEach(function(pp){
+    pp.y-=.0005; if(pp.y<-.02)pp.y=1.02;
+    ctx.beginPath();ctx.arc(pp.x*W,pp.y*H,pp.r,0,6.29);
+    ctx.fillStyle='rgba(10,89,247,.065)';ctx.fill();
+  });
+
+  ring(P,-1.86,2.30,.09,[4,7]);
+
+  var proj=NODES.map(function(n){return P.project(n.x,n.y,n.z)});
+
+  var eSort=EDGES.map(function(e,i4){return {e:i4,z:(proj[e.a].z+proj[e.b].z)/2}}).sort(function(a3,b3){return b3.z-a3.z});
+  eSort.forEach(function(o){
+    var e=EDGES[o.e],A=proj[e.a],B=proj[e.b];
+    var act=active(e);
+    var mx=(A.x+B.x)/2,my=Math.min(A.y,B.y)-16-Math.abs(A.x-B.x)*.06;
+    ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my,B.x,B.y);
+    ctx.strokeStyle=act?'rgba(10,89,247,.40)':'rgba(140,160,185,.18)';
+    ctx.lineWidth=act?1.9:1.1;ctx.stroke();
+    if(act)flow(A,B,mx,my,e.w,t);
+  });
+
+  (function(){
+    var A=proj[BYPASS.a],B=proj[BYPASS.b];
+    var on=state.i>=10;
+    var mx=(A.x+B.x)/2+60,my=(A.y+B.y)/2+30;
+    ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my,B.x,B.y);
+    ctx.setLineDash([4,7]);ctx.lineWidth=on?1.9:1;
+    ctx.strokeStyle=on?(state.pulled?'rgba(18,160,92,.66)':'rgba(18,160,92,.30)'):'rgba(150,170,195,.20)';
+    ctx.stroke();ctx.setLineDash([]);
+  })();
+
+  var nSort=proj.map(function(q,i5){return {q:q,i:i5}}).sort(function(a4,b4){return b4.q.z-a4.q.z});
+  nSort.forEach(function(o){
+    var n=NODES[o.i],q=o.q;
+    var st=nodeState(o.i);
+    var r=Math.max(4,n.r*q.k*(st.cur?1.3:1));
+    var dim=st.dim||(!st.cur&&!st.done);
+    var cc=(n.id==='chip'&&state.bad&&state.i>=9&&state.i<10)?[229,64,58]:n.c;
+
+    var g=ctx.createRadialGradient(q.x,q.y,r*.6,q.x,q.y,r*3.1);
+    g.addColorStop(0,rgba(cc,st.cur?.30:.15));
+    g.addColorStop(1,rgba(cc,0));
+    ctx.beginPath();ctx.arc(q.x,q.y,r*3.1,0,6.29);ctx.fillStyle=g;ctx.fill();
+
+    if(st.cur){
+      var pulse=1+Math.sin(t*2.6)*.10;
+      ctx.beginPath();ctx.arc(q.x,q.y,r*1.9*pulse,0,6.29);
+      ctx.strokeStyle=rgba(cc,.30);ctx.lineWidth=1.6;ctx.stroke();
+    }
+
+    ctx.beginPath();ctx.arc(q.x,q.y,r,0,6.29);
+    ctx.fillStyle=dim?'rgba(150,165,185,.72)':rgba(cc,.94);
+    ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+    if(st.done&&!dim&&r>6){
+      var bx=q.x+r*.74,by=q.y-r*.74;
+      ctx.beginPath();ctx.arc(bx,by,5.6,0,6.29);ctx.fillStyle='#12A05C';ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(bx-2.5,by+.4);ctx.lineTo(bx-.4,by+2.1);ctx.lineTo(bx+2.7,by-2.1);ctx.stroke();
+    }
+    if(n.id==='chip'&&state.bad&&state.i>=9&&state.i<10){
+      ctx.strokeStyle='#E5403A';ctx.lineWidth=2.4;
+      ctx.beginPath();
+      ctx.moveTo(q.x+r*.9,q.y-r*1.5);ctx.lineTo(q.x+r*1.8,q.y-r*2.4);
+      ctx.moveTo(q.x+r*1.8,q.y-r*1.5);ctx.lineTo(q.x+r*.9,q.y-r*2.4);
+      ctx.stroke();
+    }
+
+    if(r>6&&(!n.noLabel||W<600)){
+      ctx.font=(n.small?'500 ':'600 ')+Math.max(10,Math.min(14,13*q.k))+'px -apple-system,"PingFang SC",sans-serif';
+      ctx.textAlign='center';
+      var ly=q.y+r+13;
+      ctx.lineWidth=3.4;ctx.strokeStyle='rgba(255,255,255,.94)';
+      ctx.strokeText(n.label,q.x,ly);
+      ctx.fillStyle=dim?'#9AA6B6':(st.cur?'#0F1724':'#41505F');
+      ctx.fillText(n.label,q.x,ly);
+      if((st.cur||st.done)&&q.k>.82){
+        var stt=st.cur?'处理中':'已交接';
+        if(n.id==='chip')stt=state.pulled?'已断开':(st.cur?'被调用':'已用完');
+        if(n.id==='man')stt=st.cur?'已上屏':'待命';
+        ctx.font='500 9.5px -apple-system,"PingFang SC",sans-serif';
+        ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,.9)';
+        ctx.strokeText(stt,q.x,ly+12);
+        ctx.fillStyle=st.cur?'#0A59F7':'#12A05C';ctx.fillText(stt,q.x,ly+12);
+      }
+      ctx.textAlign='left';
+    }
+  });
+
+  var pc=proj[IDX.cab],pch=proj[IDX.chip];
+  if(W<600){
+    place($('flCab'),pc.x-58,pc.y+15,W,H);
+    place($('flChip'),pch.x+14,pch.y+12,W,H);
+  }else{
+    place($('flCab'),pc.x-62,pc.y-56,W,H);
+    place($('flChip'),pch.x-46,pch.y-58,W,H);
+  }
+}
+
+var t0=performance.now();
+function loop(t){ draw(t-t0); requestAnimationFrame(loop); }
+
+/* ---------- 文案与状态 ---------- */
+var TEXTS={
+  field:{tag:'现场',cls:'',s:'8 个寄存器，2 秒一轮。只读，写不进——这是整套东西的地基。'},
+  s1:{tag:'接',cls:'',s:'原样落地。不插值、不平滑、不丢点：坏数据也照收，因为“没上来”本身就是一条信息。'},
+  s2:{tag:'存',cls:'',s:'进台账第 #8621 行，带时间戳和链式哈希。以后每句话里的每个数字，都要能指回这一行。'},
+  s3:{tag:'判',cls:'r',s:'六条规则并行跑。R1 绝对值不过线；R2 趋势命中——102mV，已经连着三天往上走。'},
+  s4:{tag:'门',cls:'g',s:'这道门问的不是“对不对”，是“能不能往外发”。只读数据、不含控制指令 → 放行。'},
+  s5:{tag:'记',cls:'',s:'谁判的、用哪一版规则、什么时候判的，一起封进这一行。将来有人问“当时为什么判告警”，查这条。'},
+  s6:{tag:'发',cls:'',s:'只发一个事实包：判定、命中规则、数值、阈值、台账行号。720 点原始数据不出匣子。'},
+  chip:{tag:'芯',cls:'v',s:'芯被点亮，调用内网私有 DeepSeek API——它只看到这 5 个槽位，看不到那 720 点。'},
+  tr:{tag:'译',cls:'v',s:'把槽位串成一句人话。模型在这里的全部工作，就是选词和语序。'},
+  vf:{tag:'校',cls:'g',s:'校验器把句子里的每个数字拎出来，回台账核。核得上才放行，核不上整句丢。'},
+  out:{tag:'上屏',cls:'g',s:'人话一行，出处一行。运维看到的是结论；怀疑的时候，顺着第二行能查到原始那一行。'}
+};
+
+var GOOD='03 号单体压差连着三天往上走，今天到 <span class="num" data-n="102">102mV</span>，过了 <span class="num" data-n="80">80mV</span> 这条线。先别停，我盯到明早；还涨就安排一次均衡。';
+var BAD ='03 号单体压差大概 <span class="num" data-n="100">100mV</span>，已经超了 <span class="num" data-n="80">80mV</span>，建议马上停机检查。';
+var TMPL='12:00 单体压差 <span class="num" data-n="102">102mV</span>，超阈值 <span class="num" data-n="80">80mV</span>，连续 <span class="num" data-n="3">3</span> 天上升。判告警，建议安排均衡。';
+
+function setSay(k){
+  var tt=TEXTS[k];if(!tt)return;
+  $('sayTag').textContent=tt.tag;
+  $('sayTag').className='tag'+(tt.cls?' '+tt.cls:'');
+  $('sayTxt').textContent=tt.s;
+}
+
+function clearAll(){
+  clearInterval(state.timer);state.timer=null;clearTimeout(state.kick);state.kick=null;
+  $('mTxt').className='txt';$('mTxt').style.color='#5A6A7E';$('mTxt').textContent='等待判断…';
+  $('mSrc').innerHTML='';$('mHead').textContent='这台柜 · 09:00';
+  paintTeam();
+  $('rej').className='rej';$('rej').innerHTML='';
+  $('flCabT').textContent='8 寄存器 · 只读';
+  $('flChipT').textContent='只收 5 个槽位';
+  state.i=-1;state.pulled=false;state.bad=false;
+  $('bPull').textContent='拔掉芯（断模型）';$('bPull').classList.remove('warn');
+  $('bBad').classList.remove('warn');
+}
+
+function markNums(){
+  $('mTxt').querySelectorAll('.num').forEach(function(x){
+    if(x.dataset.n==='100'){x.classList.add('bad')}else{x.classList.add('ok')}
+  });
+}
+function stop(){
+  if(state.timer){clearInterval(state.timer);state.timer=null}
+  $('bPlay').textContent='▶ 播放一次';$('bPlay').classList.remove('act');
+}
+function draft(){
+  $('mTxt').className='txt';$('mTxt').style.color='#E9EEF6';
+  $('mTxt').innerHTML=state.bad?BAD:GOOD;
+  $('mSrc').innerHTML='';
+}
+function outShow(pulledOnly,afterReject){
+  state.i=10;
+  if(pulledOnly||state.pulled){
+    $('mTxt').className='txt';$('mTxt').innerHTML=TMPL;
+    $('mSrc').innerHTML='<b>模板兜底</b> · 芯未接入 · 结论照出 · 台账 #8621';
+    $('mHead').textContent='模板 · 09:00';
+    $('flChipT').textContent='已断开';
+  }else if(afterReject){
+    $('mTxt').className='txt';$('mTxt').innerHTML=TMPL;
+    $('mSrc').innerHTML='<b>模板兜底</b> · 拦下 1 次 · 结论不变 · 台账 #8621';
+    $('rej').innerHTML='<b>已改用模板</b>数字全部来自台账。句子机械，但一个字都没编。';
+    $('mHead').textContent='模板 · 09:00';
+  }else{
+    $('mSrc').innerHTML='<b>R2 压差趋势</b> · D9 12:00 · 102mV / 阈值 80mV · 台账 #8621';
+    $('mHead').textContent='5 槽位 · 已核对';
+  }
+  setSay('out');stop();
+}
+
+function step(){
+  var n=state.i+1;
+  setTimeout(paintTeam,20);
+  if(n>10){if(state.kick)return;stop();return}
+  if(n===0){state.i=0;setSay('field');return}
+  if(n<=6){
+    state.i=n;setSay('s'+n);
+    if(n===1)$('flCabT').textContent='102mV · 12:00';
+    if(n===3)$('flCabT').textContent='R2 命中 · 102mV';
+    return;
+  }
+  if(n===7){
+    if(state.pulled){outShow(true);return}
+    state.i=7;$('flChipT').textContent='收到 5 槽位';setSay('chip');return;
+  }
+  if(n===8){state.i=8;draft();setSay('tr');return}
+  if(n===9){
+    state.i=9;
+    if(state.bad){
+      markNums();setSay('vf');
+      state.kick=setTimeout(function(){
+        $('mTxt').classList.add('cut');
+        $('rej').innerHTML='<b>已丢弃</b>模型写了“100mV”，台账里没有这个数。整句退回，不许进界面。';
+        $('rej').classList.add('show');
+        state.kick=setTimeout(function(){outShow(false,true)},1800);
+      },850);
+      return;
+    }
+    markNums();
+    $('mSrc').innerHTML='<span style="color:#8CF0C8">校验通过 · 6 / 6 个数字回核台账</span>';
+    setSay('vf');return;
+  }
+  if(n===10){outShow(false)}
+}
+
+function paintTeam(){
+  for(var k=1;k<=6;k++){
+    var el=$('tm'+k);if(!el)continue;
+    var sp=el.querySelector('span');
+    el.className='tm';
+    var OUT=['720 行','#8621','R2 命中','只读放行','哈希封口','1 条'];
+    if(state.i>=k&&state.i!==k){el.className='tm done';sp.textContent='已交接 · '+OUT[k-1]}
+    else if(state.i===k){el.className='tm on';sp.textContent='处理中'}
+    else{sp.textContent='待命'}
+  }
+}
+
+function play(){
+  $('bPlay').classList.add('act');$('bPlay').textContent='▮▮ 播放中';
+  state.timer=setInterval(step,1150);
+}
+
+$('bPlay').onclick=function(){
+  if(state.timer){clearInterval(state.timer);state.timer=null;$('bPlay').textContent='▶ 续播';$('bPlay').classList.remove('act')}
+  else play();
+};
+$('bStep').onclick=function(){
+  if(state.timer){clearInterval(state.timer);state.timer=null;$('bPlay').classList.remove('act');$('bPlay').textContent='▶ 续播'}
+  step();
+};
+$('bReset').onclick=function(){clearAll();setSay('field')};
+$('bBad').onclick=function(){clearAll();state.bad=true;$('bBad').classList.add('warn');play()};
+$('bPull').onclick=function(){
+  if(state.pulled){clearAll();setSay('field');$('bPull').textContent='拔掉芯（断模型）'}
+  else{clearAll();state.pulled=true;$('bPull').textContent='插回芯';$('bPull').classList.add('warn');play()}
+};
+$('bSpin').onclick=function(){
+  state.spin=!state.spin;
+  this.textContent=state.spin?'⟳ 停环绕':'▶ 开环绕';
+};
+
+(function(){
+  var down=false,sx=0,sy=0,oy=0,op=0;
+  cv.addEventListener('pointerdown',function(e){down=true;sx=e.clientX;sy=e.clientY;oy=state.base;op=state.pitch;cv.setPointerCapture(e.pointerId)});
+  cv.addEventListener('pointermove',function(e){
+    if(!down)return;
+    state.base=oy+(e.clientX-sx)*.008;
+    state.pitch=Math.max(-.1,Math.min(.9,op+(e.clientY-sy)*.005));
+  });
+  cv.addEventListener('pointerup',function(){down=false});
+  cv.addEventListener('pointercancel',function(){down=false});
+})();
+
+sizeCanvas();
+clearAll();setSay('field');
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
